@@ -1,0 +1,19 @@
+> src/
+     > electron/
+          > main.js
+          > preload.js
+     > frontend/
+          > renderer.jsx
+          > components/
+     > backend/
+          > controllers/
+          > services/
+          > repositories/
+          > db/
+               > schema.db
+> index.html
+> forge.config.js
+> package.json
+> vite.main.config.mjs
+> vite.preload.config.mjs
+> vite.renderer.config.mjs
