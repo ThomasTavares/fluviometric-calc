@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { initDatabase } from "../backend/repositories/repository.ts"
+import { initDatabase, getAllStations, saveStationJson } from "../backend/repositories/repository.ts";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -11,10 +11,13 @@ if (started) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'electron/preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false
     },
   });
 
@@ -33,7 +36,35 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // Inicializa o banco
   initDatabase();
+
+  // Handler para obter todas as estações
+  ipcMain.handle('stations:getAll', async () => {
+    try {
+      const stationRecords = getAllStations();
+      return { success: true, payload: stationRecords };
+    } catch (error) {
+      console.error("Error fetching stations:", error);
+      return { success: false, error: String(error) };
+    }
+  });
+
+  // Handler para salvar uma estação (recebe o JSON do renderer)
+  ipcMain.handle('stations:save', async (event, stationPayload) => {
+    try {
+      // Validação leve no main (repository fará validação mais estrita)
+      if (!stationPayload || typeof stationPayload.codigo_estacao !== "string") {
+        return { success: false, error: "Payload inválido. Deve conter codigo_estacao (string) e items (array)." };
+      }
+      const result = saveStationJson(stationPayload);
+      return { success: true, message: result.message ?? "Saved" };
+    } catch (error) {
+      console.error("Error saving station:", error);
+      return { success: false, error: String(error) };
+    }
+  });
+
   createWindow();
 
   // On OS X it's common to re-create a window in the app when the
