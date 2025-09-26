@@ -1,4 +1,3 @@
-// src/backend/repositories/repository.ts
 import { app } from "electron";
 import path from "path";
 import fs from "fs";
