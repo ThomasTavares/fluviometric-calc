@@ -9,7 +9,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "check-database": "node src/scripts/check-database.js",
+    "import-stations": "electron src/scripts/run-import.js"
+
   },
   "keywords": [],
   "author": {
@@ -29,6 +32,8 @@
     "@electron/fuses": "^1.8.0",
     "@types/better-sqlite3": "^7.6.13",
     "electron": "38.0.0",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
     "vite": "^7.1.7"
   },
   "dependencies": {
