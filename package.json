@@ -9,10 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\"",
-    "check-database": "node src/scripts/check-database.js",
-    "import-stations": "electron src/scripts/run-import.js"
-
+    "lint": "echo \"No linting configured\""
   },
   "keywords": [],
   "author": {

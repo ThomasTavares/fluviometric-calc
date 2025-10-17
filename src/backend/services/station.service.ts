@@ -78,16 +78,15 @@ export class StationService {
 
         const params: any[] = [];
 
-        // TODO: As bacias e subbacias também são dividas por códigos:
-        // ex: {número} - {nome bacia}
-        // pode ser que seja válido colocar esse filtro também por códigos no sistema 
-        // ou até mesmo mudar no banco de dados acrescentando isso, tem que ver
-
         if (filters.name) {
             query += ` AND name LIKE ?`;
             params.push(`%${filters.name}%`);
         }
 
+        // TODO: As bacias e subbacias também são dividas por códigos:
+        // ex: {número} - {nome bacia}
+        // pode ser que seja válido colocar esse filtro também por códigos no sistema 
+        // ou até mesmo mudar no banco de dados acrescentando isso, tem que ver
         if (filters.sub_basin_code) {
             query += ` AND sub_basin_code LIKE ?`;
             params.push(`%${filters.sub_basin_code}%`);
@@ -114,7 +113,6 @@ export class StationService {
             query += ` AND city_name LIKE ?`;
             params.push(`%${filters.city_name}%`);
         }
-
         // TODO: Falta as buscas por: TIPO, OPERANDO, RESPONSÁVEL e OPERADORA, 
         // mas tem que verificar até que ponto isso é útil pro sistema
 

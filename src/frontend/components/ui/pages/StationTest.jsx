@@ -1,7 +1,14 @@
-import { createRoot } from "react-dom/client";
 import { useState } from "react";
+import {
+    BackButton,
+    ListAllButton,
+    CountStationsButton,
+    SearchByIdButton,
+    SearchWithFiltersButton,
+    ClearFiltersButton,
+} from "../buttons/Buttons";
 
-function App() {
+function StationTest({ onBack }) {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchId, setSearchId] = useState("");
@@ -79,18 +86,15 @@ function App() {
 
     return (
         <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "1200px", margin: "0 auto" }}>
+            <BackButton onBack={onBack} />
+
             <h1>Teste de Rotas - Estações Fluviométricas</h1>
 
             <div style={{ marginBottom: "30px", padding: "15px", background: "#f5f5f5", borderRadius: "5px" }}>
                 <h3>Testes Básicos</h3>
 
-                <button onClick={testGetAll} disabled={loading} style={buttonStyle}>
-                    Listar Todas
-                </button>
-
-                <button onClick={testCount} disabled={loading} style={buttonStyle}>
-                    Contar Estações
-                </button>
+                <ListAllButton onClick={testGetAll} loading={loading} />
+                <CountStationsButton onClick={testCount} loading={loading} />
 
                 <div style={{ marginTop: "15px", display: "flex", alignItems: "center", gap: "10px" }}>
                     <input
@@ -100,9 +104,7 @@ function App() {
                         placeholder="Digite o ID (ex: 73600000)"
                         style={{ ...inputStyle, width: "250px" }}
                     />
-                    <button onClick={testGetById} disabled={loading} style={buttonStyle}>
-                        Buscar por ID
-                    </button>
+                    <SearchByIdButton onClick={testGetById} loading={loading} />
                 </div>
             </div>
 
@@ -176,13 +178,8 @@ function App() {
                         />
                     </div>
                 </div>
-
-                <button onClick={testSearch} disabled={loading} style={{ ...buttonStyle, background: "#2196F3" }}>
-                    Buscar com Filtros
-                </button>
-                <button onClick={clearFilters} style={{ ...buttonStyle, background: "#757575" }}>
-                    Limpar Filtros
-                </button>
+                <SearchWithFiltersButton onClick={testSearch} loading={loading} />
+                <ClearFiltersButton onClick={clearFilters} />
             </div>
 
             {loading && <p style={{ fontSize: "18px", color: "#666" }}>Carregando...</p>}
@@ -225,19 +222,6 @@ function App() {
     );
 }
 
-const buttonStyle = {
-    padding: "10px 20px",
-    marginRight: "10px",
-    marginBottom: "10px",
-    background: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "bold",
-};
-
 const inputStyle = {
     width: "100%",
     padding: "8px",
@@ -254,5 +238,4 @@ const labelStyle = {
     fontSize: "13px",
 };
 
-const root = createRoot(document.getElementById("root"));
-root.render(<App />);
+export default StationTest;
