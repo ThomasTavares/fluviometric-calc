@@ -1,1 +1,0 @@
-CREATE TABLE station (id INTEGER PRIMARY KEY, name TEXT, data TEXT);
