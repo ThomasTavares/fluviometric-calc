@@ -22,6 +22,11 @@ import { Q710Service } from "../backend/services/calculations/q710.service";
 import { Q710Controller } from "../backend/controllers/q710.controller";
 import { registerQ710Routes } from "../backend/routes/q710.routes";
 
+// NOVO: Imports do Preprocessing
+import { PreprocessingService } from "../backend/services/preprocessing.service";
+import { PreprocessingController } from "../backend/controllers/preprocessing.controller";
+import { registerPreprocessingRoutes } from "../backend/routes/preprocessing.routes";
+
 if (started) {
     app.quit();
 }
@@ -138,13 +143,22 @@ const setupPercentileModule = (db) => {
     const percentileService = new PercentileService(db);
     const percentileController = new PercentileController(percentileService);
     registerPercentileRoutes(percentileController);
-    console.log("Percentile  routes registered successfully");
+    console.log("Percentile routes registered successfully");
 };
 
 const setupQ710Module = (db) => {
     const q710Service = new Q710Service(db);
     const q710Controller = new Q710Controller(q710Service);
     registerQ710Routes(q710Controller);
+    console.log("Q710 routes registered successfully");
+};
+
+// NOVO: Setup do módulo de Preprocessing
+const setupPreprocessingModule = (db) => {
+    const preprocessingService = new PreprocessingService(db);
+    const preprocessingController = new PreprocessingController(preprocessingService); // ✅ Corrigido
+    registerPreprocessingRoutes(preprocessingController);
+    console.log("Preprocessing routes registered successfully");
 };
 
 const initializeModules = (db) => {
@@ -152,6 +166,7 @@ const initializeModules = (db) => {
     setupStreamflowModule(db);
     setupPercentileModule(db);
     setupQ710Module(db);
+    setupPreprocessingModule(db); // NOVO
     console.log("\nAll modules initialized successfully");
 };
 

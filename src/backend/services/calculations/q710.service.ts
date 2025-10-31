@@ -1,11 +1,7 @@
 import Database from "better-sqlite3";
 import { safeDbQueryAll } from "../../utils/db.util";
-
-interface ServiceResponse<T> {
-    success: boolean;
-    data?: T;
-    error?: string;
-}
+import { getValidFlowsWithPreprocessing } from "../../utils/preprocessing.util";
+import { PreprocessingConfig, PreprocessingOptions, ServiceResponse } from "../../types/preprocessing.types";
 
 interface DistributionResult {
     distribution: string;
@@ -53,7 +49,7 @@ interface DateRange {
     startDate?: string;
     endDate?: string;
     yearType?: "calendar" | "hydrological";
-    hydroStartMonth?: number; // 1-12, default 1 (janeiro)
+    hydroStartMonth?: number;
     windowSize?: number;
 }
 
@@ -278,14 +274,101 @@ export class Q710Service {
     */
     private getCompleteTimeSeries(
         stationId: string,
-        dateRange?: DateRange
+        dateRange?: DateRange,
+        preprocessingOptions?: PreprocessingOptions // Mudou para Options
     ): ServiceResponse<{
         series: { date: string; flow: number | null; isValid: boolean }[];
         n_zeros: number;
         startDate: string;
         endDate: string;
     }> {
-        // Buscar todos os dados (incluindo zeros, mas não NULL)
+        // Se tem pré-processamento, usa a utility
+        if (preprocessingOptions && preprocessingOptions.mode && preprocessingOptions.mode !== "none") {
+            // Monta config COMPLETA (com stationId)
+            const config: PreprocessingConfig = {
+                stationId,
+                startDate: dateRange?.startDate,
+                endDate: dateRange?.endDate,
+                mode: preprocessingOptions.mode,
+                maxFailurePercentage: preprocessingOptions.maxFailurePercentage,
+            };
+
+            const validFlowsResult = getValidFlowsWithPreprocessing(this.db, config);
+
+            if (!validFlowsResult.success || !validFlowsResult.data) {
+                return {
+                    success: false,
+                    error: validFlowsResult.error || "No valid flows found",
+                };
+            }
+
+            // Buscar datas correspondentes aos flows válidos
+            let queryDates = `
+                SELECT date, flow_rate as flow
+                FROM daily_streamflows
+                WHERE station_id = ?
+                AND flow_rate IS NOT NULL
+                AND flow_rate > 0
+            `;
+
+            const paramsDate: any[] = [stationId];
+
+            if (dateRange?.startDate) {
+                queryDates += ` AND date >= ?`;
+                paramsDate.push(dateRange.startDate);
+            }
+
+            if (dateRange?.endDate) {
+                queryDates += ` AND date <= ?`;
+                paramsDate.push(dateRange.endDate);
+            }
+
+            queryDates += ` ORDER BY date ASC`;
+
+            const resultDates = safeDbQueryAll<{ date: string; flow: number }>(
+                this.db,
+                queryDates,
+                paramsDate,
+                "fetching dates for Q7,10 with preprocessing"
+            );
+
+            if (!resultDates.success || !resultDates.data || resultDates.data.length === 0) {
+                return { success: false, error: "No valid flow data found" };
+            }
+
+            const data = resultDates.data;
+            const startDate = data[0].date;
+            const endDate = data[data.length - 1].date;
+            const n_zeros = data.filter((d) => d.flow === 0).length;
+
+            // Criar série completa
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const dataMap = new Map(data.map((d) => [d.date, d.flow]));
+
+            const completeSeries: { date: string; flow: number | null; isValid: boolean }[] = [];
+            const currentDate = new Date(start);
+
+            while (currentDate <= end) {
+                const dateStr = currentDate.toISOString().split("T")[0];
+                const flow = dataMap.get(dateStr);
+
+                completeSeries.push({
+                    date: dateStr,
+                    flow: flow !== undefined ? flow : null,
+                    isValid: flow !== undefined && flow !== null,
+                });
+
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            return {
+                success: true,
+                data: { series: completeSeries, n_zeros, startDate, endDate },
+            };
+        }
+
+        // COMPORTAMENTO PADRÃO/LEGACY
         let query = `
             SELECT date, flow_rate as flow
             FROM daily_streamflows
@@ -321,10 +404,9 @@ export class Q710Service {
         const data = result.data;
         const startDate = data[0].date;
         const endDate = data[data.length - 1].date;
-
         const n_zeros = data.filter((d) => d.flow === 0).length;
 
-        // Criar série completa entre startDate e endDate
+        // Criar série completa
         const start = new Date(startDate);
         const end = new Date(endDate);
         const dataMap = new Map(data.map((d) => [d.date, d.flow]));
@@ -470,54 +552,12 @@ export class Q710Service {
         return { success: true, data: q7Annual };
     }
 
-    /*
-	FUNÇÃO PRINCIPAL: Calcula Q7,10 completo com todas as distribuições
-	
-	Q7,10 = Vazão mínima de 7 dias consecutivos com período de retorno de 10 anos
-	É a vazão de referência para outorga de recursos hídricos no Brasil
-	
-	Pipeline completo:
-	
-	ETAPA 1: Busca série temporal completa (com gaps marcados)
-			→ getCompleteTimeSeries()
-	
-	ETAPA 2: Calcula médias móveis de 7 dias (apenas janelas sem gaps)
-			→ calculateMovingAverages7Days()
-			Fórmula: Q7 = Σ(vazões 7 dias) / 7
-	
-	ETAPA 3: Extrai Q7 mínimo de cada ano (calendário ou hidrológico)
-			→ extractAnnualQ7()
-			Resultado: [Q7_ano1, Q7_ano2, ..., Q7_anoN]
-	
-	ETAPA 4: Testa 5 distribuições probabilísticas:
-			- Normal: Q = μ + z_p·σ
-			- Log-Normal: Q = exp(μ_ln + z_p·σ_ln)
-			- Pearson III: Q = μ + k·σ (k de Kite)
-			- Log-Pearson III: Q = exp(μ_ln + k·σ_ln)
-			- Weibull: Q = λ·[-ln(1-p)]^(1/k)
-	
-	ETAPA 5: Seleciona melhor distribuição (menor amplitude IC)
-	
-	ETAPA 6: Gera curvas para períodos T=[2,5,10,15,20,25,30,50,75,100]
-	
-	Validações:
-	- Mínimo 365 dias de dados
-	- Mínimo 10 anos de Q7 anuais
-	- Recomendado: >= 15 anos (ideal >= 30)
-	
-	Exemplo de uso:
-	calculateQ710("70100000", { 
-	yearType: "hydrological", 
-	hydroStartMonth: 10 
-	})
-	
-	Retorna objeto Q710Result com:
-	- q7_values: [0.8, 1.2, 0.5, ...] (série anual)
-	- best_distribution: { distribution: "Log-Pearson III", event_m3s: 0.65, ... }
-	- all_distributions: [Normal, Log-Normal, ...]
-	- return_period_curves: { "Normal": [...], "Weibull": [...] }
-    */
-    calculateQ710(stationId: string, dateRange?: DateRange, windowSize: number = 7): ServiceResponse<Q710Result> {
+    calculateQ710(
+        stationId: string,
+        dateRange?: DateRange,
+        windowSize: number = 7,
+        preprocessingOptions?: PreprocessingOptions // Mudou para Options
+    ): ServiceResponse<Q710Result> {
         if (!stationId || stationId.trim() === "") {
             return { success: false, error: "Station ID is required" };
         }
@@ -526,8 +566,13 @@ export class Q710Service {
             const yearType = dateRange?.yearType || "calendar";
             const hydroStartMonth = dateRange?.hydroStartMonth || 1;
 
-            // ETAPA 1: Obter série temporal completa com marcação de gaps
-            const timeSeriesResult = this.getCompleteTimeSeries(stationId, dateRange);
+            // ETAPA 1: Obter série temporal completa
+            const timeSeriesResult = this.getCompleteTimeSeries(
+                stationId,
+                dateRange,
+                preprocessingOptions // Passa Options
+            );
+
             if (!timeSeriesResult.success) {
                 return { success: false, error: timeSeriesResult.error };
             }
@@ -541,7 +586,7 @@ export class Q710Service {
                 };
             }
 
-            // ETAPA 2: Calcular médias móveis de 7 dias (apenas janelas completas)
+            // ETAPA 2: Calcular médias móveis de 7 dias
             const movingAvgResult = this.calculateMovingAverages7Days(series, windowSize);
             if (!movingAvgResult.success) {
                 return { success: false, error: movingAvgResult.error };
@@ -549,7 +594,7 @@ export class Q710Service {
 
             const movingAvgs = movingAvgResult.data!;
 
-            // ETAPA 3: Extrair Q7 anual (por ano hidrológico ou calendário)
+            // ETAPA 3: Extrair Q7 anual
             const q7AnnualResult = this.extractAnnualQ7(movingAvgs, yearType, hydroStartMonth);
             if (!q7AnnualResult.success) {
                 return { success: false, error: q7AnnualResult.error };
@@ -569,10 +614,6 @@ export class Q710Service {
             const T = 10;
             const p = 1 / T;
 
-            console.log("\n [CALCULATE-Q710] T =", T, "| p =", p); //  Deve ser 0.1
-            console.log(" [CALCULATE-Q710] n_years =", n);
-            console.log(" [CALCULATE-Q710] q7_values (primeiros 5) =", q7Values.slice(0, 5));
-
             const distributions: DistributionResult[] = [
                 this.testNormalDistribution(q7Values, p, T),
                 this.testLogNormalDistribution(q7Values, p, T),
@@ -585,12 +626,12 @@ export class Q710Service {
                 return { success: false, error: "No valid distributions found" };
             }
 
-            // ETAPA 5: Selecionar melhor distribuição (menor amplitude IC)
+            // ETAPA 5: Selecionar melhor distribuição
             const bestDistribution = distributions.reduce((best, current) =>
                 current.ic_amplitude < best.ic_amplitude ? current : best
             );
 
-            // ETAPA 6: Gerar notas
+            // ETAPA 6: Gerar notas e curvas
             const notes = this.generateNotes(bestDistribution, n, n_zeros, yearType, hydroStartMonth);
             const returnPeriodCurves = this.generateReturnPeriodCurves(distributions);
 

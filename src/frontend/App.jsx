@@ -4,6 +4,7 @@ import PercentileComparison from "./components/ui/pages/PercentileComparation";
 import StationTest from "./components/ui/pages/StationTest";
 import StreamflowTest from "./components/ui/pages/StreamflowTest";
 import Q710Analysis from "./components/ui/pages/q710Analysis";
+import Preprocessing from "./components/ui/pages/preprocessing";
 
 function App() {
     const [currentView, setCurrentView] = useState("home");
@@ -18,6 +19,8 @@ function App() {
                 return <StreamflowTest onBack={() => setCurrentView("home")} />;
             case "q710":
                 return <Q710Analysis onBack={() => setCurrentView("home")} />;
+            case "preprocessing": // NOVO
+                return <Preprocessing onBack={() => setCurrentView("home")} />;
             case "home":
             default:
                 return <Home onSelectView={setCurrentView} />;

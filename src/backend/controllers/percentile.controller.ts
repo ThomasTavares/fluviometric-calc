@@ -5,6 +5,12 @@ interface DateRange {
     endDate?: string;
 }
 
+// NOVO: Interface para pré-processamento
+interface PreprocessingConfig {
+    mode?: "none" | "monthly" | "annually";
+    maxFailurePercentage?: number;
+}
+
 export class PercentileController {
     private percentileService: PercentileService;
 
@@ -12,42 +18,68 @@ export class PercentileController {
         this.percentileService = percentileService;
     }
 
-    async handleCalculatePercentile(stationId: string, percentile: number, dateRange?: DateRange) {
-        return this.percentileService.calculatePercentile(stationId, percentile, dateRange);
+    async handleCalculatePercentile(
+        stationId: string,
+        percentile: number,
+        dateRange?: DateRange,
+        preprocessingConfig?: PreprocessingConfig // NOVO
+    ) {
+        return this.percentileService.calculatePercentile(
+            stationId,
+            percentile,
+            dateRange,
+            preprocessingConfig // NOVO
+        );
     }
 
     async handleCalculatePercentileWithMethod(
-        stationId: string, 
-        percentile: number, 
+        stationId: string,
+        percentile: number,
         method: PercentileMethod,
-        dateRange?: DateRange
+        dateRange?: DateRange,
+        preprocessingConfig?: PreprocessingConfig // NOVO
     ) {
-        return this.percentileService.calculatePercentileWithMethod(stationId, percentile, method, dateRange);
+        return this.percentileService.calculatePercentileWithMethod(
+            stationId,
+            percentile,
+            method,
+            dateRange,
+            preprocessingConfig // NOVO
+        );
     }
 
-    async handleCompareAllPercentileMethods(stationId: string, percentile: number, dateRange?: DateRange) {
-        return this.percentileService.compareAllPercentileMethods(stationId, percentile, dateRange);
+    async handleCalculateAllPercentiles(
+        stationId: string,
+        dateRange?: DateRange,
+        preprocessingConfig?: PreprocessingConfig // NOVO
+    ) {
+        return this.percentileService.calculateAllPercentiles(
+            stationId,
+            dateRange,
+            preprocessingConfig // NOVO
+        );
     }
 
-
-    async handleComparePercentileMethods(stationId: string, percentile: number, dateRange?: DateRange) {
-        return this.percentileService.comparePercentileMethods(stationId, percentile, dateRange);
-    }
-
-    async handleCalculateAllPercentiles(stationId: string, dateRange?: DateRange) {
-        return this.percentileService.calculateAllPercentiles(stationId, dateRange);
-    }
-
-
-    async handleCalculateCustomPercentiles(stationId: string, percentiles: number[], dateRange?: DateRange) {
-        return this.percentileService.calculateCustomPercentiles(stationId, percentiles, dateRange);
+    async handleCalculateCustomPercentiles(
+        stationId: string,
+        percentiles: number[],
+        dateRange?: DateRange,
+        preprocessingConfig?: PreprocessingConfig // NOVO
+    ) {
+        return this.percentileService.calculateCustomPercentiles(
+            stationId,
+            percentiles,
+            dateRange,
+            preprocessingConfig // NOVO
+        );
     }
 
     async handleCalculateCustomPercentilesWithMethod(
-        stationId: string, 
-        percentiles: number[], 
+        stationId: string,
+        percentiles: number[],
         method: PercentileMethod,
-        dateRange?: DateRange
+        dateRange?: DateRange,
+        preprocessingConfig?: PreprocessingConfig // NOVO
     ) {
         if (!stationId || stationId.trim() === "") {
             return { success: false, error: "Station ID is required" };
@@ -69,10 +101,11 @@ export class PercentileController {
         const results = [];
         for (const p of percentiles) {
             const result = await this.percentileService.calculatePercentileWithMethod(
-                stationId, 
-                p, 
+                stationId,
+                p,
                 method,
-                dateRange
+                dateRange,
+                preprocessingConfig // NOVO
             );
             if (!result.success) {
                 return result;
@@ -84,10 +117,16 @@ export class PercentileController {
     }
 
     async handleCalculateFlowDurationCurve(
-        stationId: string, 
+        stationId: string,
         dateRange?: DateRange,
-        numberOfPoints: number = 100
+        numberOfPoints: number = 100,
+        preprocessingConfig?: PreprocessingConfig // NOVO
     ) {
-        return this.percentileService.calculateFlowDurationCurve(stationId, dateRange, numberOfPoints);
+        return this.percentileService.calculateFlowDurationCurve(
+            stationId,
+            dateRange,
+            numberOfPoints,
+            preprocessingConfig // NOVO
+        );
     }
 }
