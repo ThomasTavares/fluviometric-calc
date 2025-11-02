@@ -1,7 +1,9 @@
+import StationData from "../interfaces/StationInterface";
+
 interface StationValidationResponse {
     success: boolean;
     exists: boolean;
-    stationName?: string;
+    data?: StationData;
     error?: string;
 }
 
@@ -13,7 +15,7 @@ export const validateStationCode = async (stationCode: string): Promise<StationV
             return {
                 success: true,
                 exists: true,
-                stationName: result.data.name
+                data: result.data
             };
         } else {
             return {

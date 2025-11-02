@@ -1,9 +1,7 @@
 import { JSX, useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/pt-br';
-dayjs.locale('pt-br');
 
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -11,31 +9,16 @@ import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import { StartScreenProps } from '../../interfaces/StartInterface';
 import { validateStationCode } from '../../services/station.api';
 
 function StartScreen(props: StartScreenProps): JSX.Element {
     const [stationCode, setStationCode] = useState<string>('');
-    const [startDate, setStartDate] = useState<Dayjs | null>(null);
-    const [endDate, setEndDate] = useState<Dayjs | null>(null);
     const [isValidating, setIsValidating] = useState<boolean>(false);
     const [validationError, setValidationError] = useState<string>('');
     const [stationName, setStationName] = useState<string>('');
 
-    const currentYear = dayjs();
-
     const handleStart = async () => {
-
-        const isDateRangeValid = startDate && endDate && startDate.isBefore(endDate);
-        if (!isDateRangeValid) {
-            setValidationError('Intervalo de datas inválido');
-            return;
-        }
-
         setIsValidating(true);
         setValidationError('');
 
@@ -51,32 +34,50 @@ function StartScreen(props: StartScreenProps): JSX.Element {
             return;
         }
 
-        setStationName(validation.stationName || '');
+        const stationData = validation.data!;
+        setStationName(stationData.name || '');
 
         console.log('Starting with the following data:');
-        console.log('Station Code:', stationCode);
-        console.log('Station Name:', stationName);
-        console.log('Start Date:', startDate ? startDate.format('DD-MM-YYYY') : null);
-        console.log('End Date:', endDate ? endDate.format('DD-MM-YYYY') : null);
+        console.log('Station Code:', stationData.id);
+        console.log('Station Name:', stationData.name);
 
         props.onInit({
-            stationCode: stationCode,
-            stationName: stationName,
-            startDate: startDate.format('DD-MM-YYYY'),
-            endDate: endDate.format('DD-MM-YYYY'),
+            id: stationData.id,
+            name: stationData.name,
+            type: stationData.type,
+            additional_code: stationData.additional_code,
+            basin_code: stationData.basin_code || '',
+            sub_basin_code: stationData.sub_basin_code || '',
+            river_name: stationData.river_name || '',
+            state_name: stationData.state_name || '',
+            city_name: stationData.city_name || '',
+            responsible_sigla: stationData.responsible_sigla || '',
+            operator_sigla: stationData.operator_sigla || '',
+            drainage_area: stationData.drainage_area,
+            latitude: stationData.latitude,
+            longitude: stationData.longitude,
+            altitude: stationData.altitude,
         });
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box sx={{
+        <Box sx={{ 
+                minHeight: '100vh',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                minHeight: '100vh',
-                padding: 3,
-            }}>
+        }}>
+            <Paper
+                elevation={3}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 3,
+                    maxWidth: 600,
+                }}
+            >
                 <Typography variant='h4' gutterBottom>
                     Insira as Informações da Estação
                 </Typography>
@@ -106,34 +107,16 @@ function StartScreen(props: StartScreenProps): JSX.Element {
                         }}
                     />
 
-                    <DatePicker
-                        label='Data Inicial'
-                        maxDate={currentYear}
-                        format='DD/MM/YYYY'
-                        yearsOrder='desc'
-                        value={startDate}
-                        onChange={(newValue) => setStartDate(newValue)}
-                    />
-
-                    <DatePicker
-                        label='Data Final'
-                        maxDate={currentYear}
-                        format='DD/MM/YYYY'
-                        yearsOrder='desc'
-                        value={endDate}
-                        onChange={(newValue) => setEndDate(newValue)}
-                    />
-
                     <Button 
                         variant='contained'
                         size='large'
                         onClick={handleStart}
-                        disabled={!stationCode || !startDate || !endDate || isValidating}
+                        disabled={!stationCode || isValidating}
                         startIcon={isValidating ? <CircularProgress size={20} /> : null}
                     >{isValidating ? 'Validando...' : 'Confirmar'}</Button>
                 </Stack>
-            </Box>
-        </LocalizationProvider>
+            </Paper>
+        </Box>
     );
 }
 

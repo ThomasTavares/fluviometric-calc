@@ -2,6 +2,7 @@ import { JSX, useState } from 'react';
 
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -39,14 +40,17 @@ function SideBar(props: MainScreenProps): JSX.Element {
             <Box sx={{ width: 250 }}>
                 <List>
                     {['Vazões', 'Percentis', 'Q710'].map((text, index) => (
-                        <ListItem key={index} disablePadding>
-                            <ListItemButton onClick={() => handleSelection(index)}>
-                            <ListItemIcon>
-                                <QueryStatsIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
+                        <>
+                            <ListItem key={index} disablePadding>
+                                <ListItemButton onClick={() => handleSelection(index)}>
+                                <ListItemIcon>
+                                    <QueryStatsIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                            <Divider />
+                        </>
                     ))}
                 </List>
             </Box>
