@@ -2,7 +2,6 @@ import { JSX, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-//import Button from '@mui/material/Button';
 
 import { MainScreenProps, ScreenType } from '../../interfaces/MainInterface';
 import HomeScreen from '../screens/HomeScreen';
@@ -13,6 +12,8 @@ function MainScreen(props: MainScreenProps): JSX.Element {
 
     const renderScreen = ():JSX.Element => {
         switch (currentScreen) {
+            case 'pre-processing':
+                return <></>;
             case 'streamflow':
                 return <></>;
             case 'percentile':
@@ -25,19 +26,21 @@ function MainScreen(props: MainScreenProps): JSX.Element {
     };
 
     return (
-        <Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100vh',
-                padding: 3,
-        }}>
-            <SideBar onSelectScreen={setCurrentScreen}/>
-            <Stack>
-                {renderScreen()}
-            </Stack>
-        </Box>
+        <Stack>
+            <SideBar onSelectScreen={setCurrentScreen} onBack={props.onBack}/>
+            <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '100vh',
+                    padding: 3,
+            }}>
+                <Stack>
+                    {renderScreen()}
+                </Stack>
+            </Box>
+        </Stack>
     );
 }
 
