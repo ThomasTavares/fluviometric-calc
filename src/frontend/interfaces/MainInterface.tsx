@@ -5,5 +5,5 @@ export type ScreenType = 'home' | 'pre-processing' | 'streamflow' | 'percentile'
 export interface MainScreenProps {
     stationData?: StationData;
     onSelectScreen?: (screen: ScreenType) => void;
-    onBack: () => void;
+    onBack?: () => void;
 }
