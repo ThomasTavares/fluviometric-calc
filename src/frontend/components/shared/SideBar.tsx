@@ -1,19 +1,17 @@
 import { JSX, useState } from 'react';
 
-import Fab from '@mui/material/Fab';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 
-import { MainScreenProps, ScreenType } from '../../interfaces/MainInterface';
+import { ScreenType } from '../../interfaces/MainInterface';
+import SideBarProps from '../../interfaces/SideBarInterface';
 
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
@@ -23,61 +21,54 @@ const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Q710', key: 'q710' }
 ];
 
-function SideBar(props: MainScreenProps): JSX.Element {
-    const [open, setOpen] = useState<boolean>(false);
+function SideBar(props: SideBarProps): JSX.Element {
+    const mainScreenProps = props.mainScreenProps;
 
     const handleSelection = (screen: ScreenType) => {
-        if (!props.onSelectScreen) return;
-        props.onSelectScreen(screen);
+        if (!mainScreenProps.onSelectScreen) return;
+        mainScreenProps.onSelectScreen(screen);
+        props.onClose();
     }
 
     return (
-        <>
-            <Drawer
-                open={open}
-                onClose={() => setOpen(false)}
-                variant='persistent'
-            >
-                <Box sx={{ width: 250 }}>
-                    <List>
-                        <ListItem key={'close'} disablePadding>
-                            <ListItemButton onClick={() => setOpen(false)}>
-                                <ListItemIcon>
-                                    <ArrowBackIcon />
-                                </ListItemIcon>
+        <Drawer
+            open={props.open}
+            onClose={props.onClose}
+            variant='temporary'
+            slotProps={{
+                backdrop: { sx: { backgroundColor: 'transparent' } }
+            }}
+        >
+            <Box sx={{ width: 250 }}>
+                <List>
+                    <ListItem key={'close'} disablePadding divider={true}>
+                        <ListItemButton onClick={props.onClose}>
+                            <ListItemIcon>
+                                <ArrowBackIcon />
+                            </ListItemIcon>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={'start'} disablePadding>
+                        <ListItemButton onClick={() => mainScreenProps.onBack ? mainScreenProps.onBack() : null}>
+                            <ListItemIcon>
+                                <ArrowBackIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Alterar Estação'} />
+                        </ListItemButton>
+                    </ListItem>
+                    {screensInfoMap.map((screen) => (
+                        <ListItem key={screen.key} disablePadding>
+                            <ListItemButton onClick={() => handleSelection(screen.key)}>
+                            <ListItemIcon>
+                                <QueryStatsIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={screen.label} />
                             </ListItemButton>
                         </ListItem>
-                        <Divider />
-                        <ListItem key={'start'} disablePadding>
-                            <ListItemButton onClick={() => props.onBack ? props.onBack() : null}>
-                                <ListItemIcon>
-                                    <ArrowBackIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={'Alterar Estação'} />
-                            </ListItemButton>
-                        </ListItem>
-                        {screensInfoMap.map((screen) => (
-                            <ListItem key={screen.key} disablePadding>
-                                <ListItemButton onClick={() => handleSelection(screen.key)}>
-                                <ListItemIcon>
-                                    <QueryStatsIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={screen.label} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
-            </Drawer>
-            <Fab
-                variant='circular'
-                size='small'
-                disabled={open}
-                onClick={() => setOpen(true)}
-            >
-                <MenuIcon />
-            </Fab>
-        </>
+                    ))}
+                </List>
+            </Box>
+        </Drawer>
     );
 }
 

@@ -35,7 +35,7 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
 
     return (
         <>
-            <Typography variant='h4'>Bem-vindo ao Sistema de Cálculos Fluviométricos</Typography><br/>
+            <Typography variant='h4'>Boas Vindas ao Sistema de Cálculos Fluviométricos</Typography><br/>
             <TableContainer component={Paper} elevation={3}>
                 <Table size='small'>
                     <TableHead>
