@@ -6,22 +6,23 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import TopBarProps from '../../interfaces/TopBarInterface';
+import TopBarProps from '../../interfaces/topbar.interface';
 import SideBar from './SideBar';
 
 function TopBar(props: TopBarProps): JSX.Element {
     const [sideOpen, setSideOpen] = useState<boolean>(false);
 
     const renderScreenName = ():string => {
+        if (sideOpen) return '';
         switch (props.screen) {
             case 'pre-processing':
                 return 'Pré-Processamento';
             case 'streamflow':
-                return 'Vazões';
+                return 'Dados Fluviométricos';
             case 'percentile':
-                return 'Percentis';
+                return 'Curva de Permanência';
             case 'q710':
-                return 'Q710';
+                return 'Vazão Q710';
             default:
                 return 'Informações Estação';
         }

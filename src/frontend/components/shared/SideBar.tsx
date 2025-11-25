@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX } from 'react';
 
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
@@ -10,15 +10,15 @@ import ListItemText from '@mui/material/ListItemText';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 
-import { ScreenType } from '../../interfaces/MainInterface';
-import SideBarProps from '../../interfaces/SideBarInterface';
+import { ScreenType } from '../../interfaces/main.interface';
+import SideBarProps from '../../interfaces/sidebar.interface';
 
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
     { label: 'Pré-Processamento', key: 'pre-processing' },
-    { label: 'Vazões', key: 'streamflow' },
-    { label: 'Percentis', key: 'percentile' },
-    { label: 'Q710', key: 'q710' }
+    { label: 'Dados Fluviométricos', key: 'streamflow' },
+    { label: 'Curva de Duração', key: 'percentile' },
+    { label: 'Vazão Q710', key: 'q710' }
 ];
 
 function SideBar(props: SideBarProps): JSX.Element {

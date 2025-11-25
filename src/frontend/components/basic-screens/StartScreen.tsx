@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { StartScreenProps } from '../../interfaces/StartInterface';
+import { StartScreenProps } from '../../interfaces/start.interface';
 import { validateStationCode } from '../../services/station.api';
 
 function StartScreen(props: StartScreenProps): JSX.Element {
@@ -45,18 +45,19 @@ function StartScreen(props: StartScreenProps): JSX.Element {
             id: stationData.id,
             name: stationData.name,
             type: stationData.type,
-            additional_code: stationData.additional_code,
-            basin_code: stationData.basin_code || '',
-            sub_basin_code: stationData.sub_basin_code || '',
-            river_name: stationData.river_name || '',
-            state_name: stationData.state_name || '',
-            city_name: stationData.city_name || '',
-            responsible_sigla: stationData.responsible_sigla || '',
-            operator_sigla: stationData.operator_sigla || '',
-            drainage_area: stationData.drainage_area,
-            latitude: stationData.latitude,
-            longitude: stationData.longitude,
-            altitude: stationData.altitude,
+            additional_code: stationData.additional_code || null,
+            basin_code: stationData.basin_code,
+            sub_basin_code: stationData.sub_basin_code,
+            river_name: stationData.river_name,
+            state_name: stationData.state_name,
+            city_name: stationData.city_name,
+            responsible_sigla: stationData.responsible_sigla,
+            operator_sigla: stationData.operator_sigla,
+            drainage_area: stationData.drainage_area || null,
+            latitude: stationData.latitude || null,
+            longitude: stationData.longitude || null,
+            altitude: stationData.altitude || null,
+            created_at: stationData.created_at
         });
     };
 

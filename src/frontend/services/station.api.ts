@@ -1,9 +1,9 @@
-import StationData from "../interfaces/StationInterface";
+import { Station } from "../../backend/db";
 
 interface StationValidationResponse {
     success: boolean;
     exists: boolean;
-    data?: StationData;
+    data?: Station;
     error?: string;
 }
 

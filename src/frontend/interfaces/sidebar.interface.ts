@@ -1,4 +1,4 @@
-import { MainScreenProps } from "./MainInterface";
+import { MainScreenProps } from "./main.interface";
 
 export default interface SideBarProps {
     mainScreenProps: MainScreenProps;

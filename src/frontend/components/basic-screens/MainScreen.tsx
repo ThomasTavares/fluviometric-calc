@@ -3,9 +3,10 @@ import { JSX, useState } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 
-import { MainScreenProps, ScreenType } from '../../interfaces/MainInterface';
-import HomeScreen from '../screens/HomeScreen';
+import { MainScreenProps, ScreenType } from '../../interfaces/main.interface';
 import TopBar from '../shared/TopBar';
+import HomeScreen from '../screens/HomeScreen';
+import StreamflowScreen from '../screens/StreamflowScreen';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -15,7 +16,7 @@ function MainScreen(props: MainScreenProps): JSX.Element {
             case 'pre-processing':
                 return <></>;
             case 'streamflow':
-                return <></>;
+                return <StreamflowScreen />;
             case 'percentile':
                 return <></>;
             case 'q710':
@@ -35,16 +36,13 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                 }}
             />
             <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '50vh',
-                    padding: 3,
+                flexGrow: 1,
+                width: '100%',
+                overflowY: 'auto',
+                boxSizing: 'border-box',
+                padding: 3,
             }}>
-                <Box>
-                    {renderScreen()}
-                </Box>
+                {renderScreen()}
             </Box>
         </Stack>
     );

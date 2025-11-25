@@ -1,3 +1,5 @@
+import { ServiceResponse, DailyFlowsRow } from "../backend/services/streamflow.service";
+
 export interface BackendAPI {
     stations: {
         getAll: () => Promise<any>;
@@ -15,9 +17,9 @@ export interface BackendAPI {
     };
 
     streamflow: {
-        getForExport: (stationId: string, startDate: string, endDate: string) => Promise<any>;
-        analyzeNullFlows: (stationId: string, startDate: string, endDate: string) => Promise<any>;
-        getNullFlowsSummary: (stationId: string, startDate: string, endDate: string) => Promise<any>;
+        getForExport: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<DailyFlowsRow[]>>;
+        analyzeNullFlows: (stationId: string, startDate?: string, endDate?: string) => Promise<any>;
+        getNullFlowsSummary: (stationId: string, startDate?: string, endDate?: string) => Promise<any>;
     };
 
     analysis: {

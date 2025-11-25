@@ -1,5 +1,6 @@
 import { JSX, ReactNode } from 'react';
 
+import Box from '@mui/material/Box'; 
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,10 +10,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-import { MainScreenProps } from '../../interfaces/MainInterface';
-import StationData from '../../interfaces/StationInterface';
+import { MainScreenProps } from '../../interfaces/main.interface';
+import { Station } from '../../../backend/db';
 
-const stationInfoMap: { label: ReactNode; key: keyof StationData }[] = [
+const stationInfoMap: { label: ReactNode; key: keyof Station }[] = [
     { label: 'Código', key: 'id' },
     { label: 'Nome', key: 'name' },
     { label: 'Tipo', key: 'type' },
@@ -34,14 +35,23 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
     const { stationData } = props;
 
     return (
-        <>
-            <Typography variant='h4'>Boas Vindas ao Sistema de Cálculos Fluviométricos</Typography><br/>
+        <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '50vh',
+                paddingLeft: 40,
+                paddingRight: 40,
+            }}
+        >
+            <Typography variant='h4'>Boas Vindas ao Sistema de Análise Fluviométrica</Typography><br/>
             <TableContainer component={Paper} elevation={3}>
                 <Table size='small'>
                     <TableHead>
                         <TableRow>
                             <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
-                                Informações da Estação
+                                Informações da Estação Selecionada
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -56,7 +66,7 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
                                             {row.label}
                                         </TableCell>
                                         <TableCell>
-                                            {value ?? 'N/A'}
+                                            {value instanceof Date ? value.toLocaleString() : value ?? 'N/A'}
                                         </TableCell>
                                     </TableRow>
                                 );
@@ -71,7 +81,7 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </>
+        </Box>
     );
 }
 

@@ -1,15 +1,18 @@
 import { JSX, useState } from 'react';
 import StartScreen from './components/basic-screens/StartScreen';
 import MainScreen from './components/basic-screens/MainScreen';
-import StationData from './interfaces/StationInterface';
+import { Station } from '../backend/db';
 
 type BasicScreenType = 'start' | 'main';
 
 function App(): JSX.Element {
     const [currentBasicScreen, setCurrentBasicScreen] = useState<BasicScreenType>('start');
-    const [stationData, setStationData] = useState<StationData | null>(null);
+    const [stationData, setStationData] = useState<Station | null>(null);
 
-    const handleInit = (data: StationData) => {
+    const handleInit = (data: Station) => {
+        sessionStorage.clear();
+        sessionStorage.setItem('stationId', data.id);
+
         setStationData(data);
         setCurrentBasicScreen('main');
     }

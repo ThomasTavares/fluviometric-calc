@@ -1,4 +1,4 @@
-import { ScreenType, MainScreenProps } from "./MainInterface"
+import { ScreenType, MainScreenProps } from "./main.interface"
 
 export default interface TopBarProps {
     mainScreenProps: MainScreenProps;
