@@ -2,14 +2,21 @@ import { JSX, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { MainScreenProps, ScreenType } from '../../interfaces/main.interface';
-import TopBar from '../shared/TopBar';
+import TopBar from '../menu/TopBar';
 import HomeScreen from '../screens/HomeScreen';
 import StreamflowScreen from '../screens/StreamflowScreen';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
     const renderScreen = ():JSX.Element => {
         switch (currentScreen) {
@@ -32,7 +39,7 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                 screen={currentScreen}
                 mainScreenProps={{
                     onSelectScreen: setCurrentScreen,
-                    onBack: props.onBack
+                    onBack: () => setDialogOpen(true)
                 }}
             />
             <Box sx={{
@@ -42,6 +49,24 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                 boxSizing: 'border-box',
                 padding: 3,
             }}>
+                <Dialog
+                    open={dialogOpen}
+                    onClose={() => setDialogOpen(false)}
+                >
+                    <DialogTitle>{'Deseja alterar a estação?'}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Ao alterar a estação, todas as modificações serão perdidas.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={() => { if (props.onBack) props.onBack(); }} autoFocus>
+                            Confirmar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
                 {renderScreen()}
             </Box>
         </Stack>

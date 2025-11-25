@@ -8,7 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Paper from '@mui/material/Paper';
-import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 import Alert from '@mui/material/Alert';
 
 import { ServiceResponse, DailyFlowsRow } from '../../../backend/services/streamflow.service';
@@ -20,6 +20,8 @@ function StreamflowScreen(): JSX.Element {
     const [tablePage, setTablePage] = useState<number>(0);
 
     const stationId = sessionStorage.getItem('stationId');
+    const initDate = sessionStorage.getItem('initDate');
+    const endDate = sessionStorage.getItem('endDate');
 
     if (!stationId) {
         throw new Error('Station ID is missing in session storage.');
@@ -35,7 +37,10 @@ function StreamflowScreen(): JSX.Element {
         setImportError('');
 
         try {
-            const result: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(stationId, '2000-01-01', '2024-12-31');
+            const result: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(stationId,
+                                                                                                             initDate || undefined,
+                                                                                                             endDate || undefined
+                                                                                                            );
             if (result.success && result.data) {
                 setStreamflowData(result.data);
                 console.log('Imported streamflow data successfully.');
@@ -81,6 +86,8 @@ function StreamflowScreen(): JSX.Element {
                 </Alert>
             )}
 
+            {isImporting && <LinearProgress />}
+
             <TableContainer
                 sx={{ 
                     flexGrow: 1,
@@ -88,7 +95,7 @@ function StreamflowScreen(): JSX.Element {
                     maxHeight: '80vh'
                 }}
             >
-                <Table size='small' stickyHeader>
+                <Table size='small' stickyHeader sx={{ display: isImporting ? 'none' : '' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{
@@ -126,13 +133,7 @@ function StreamflowScreen(): JSX.Element {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {isImporting ? (
-                            <TableRow>
-                                <TableCell colSpan={33} align='left' sx={{ py: 4 }}>
-                                    <CircularProgress />
-                                </TableCell>
-                            </TableRow>
-                        ) : paginatedData.length === 0 ? (
+                        {paginatedData.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={33} align='center' sx={{ py: 4 }}>
                                     No streamflow data available
@@ -188,6 +189,8 @@ function StreamflowScreen(): JSX.Element {
                 onPageChange={handleChangeTablePage}
                 rowsPerPage={rowsPerPage}
                 rowsPerPageOptions={[]}
+                
+                sx={{ display: isImporting ? 'none' : '' }}
             />
         </Paper>
     );
