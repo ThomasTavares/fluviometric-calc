@@ -41,12 +41,12 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '50vh',
-                paddingLeft: 40,
-                paddingRight: 40,
             }}
         >
-            <Typography variant='h4'>Boas Vindas ao Sistema de Análise Fluviométrica</Typography><br/>
-            <TableContainer component={Paper} elevation={3}>
+            <Typography variant='h4'>
+                Boas Vindas ao Sistema de Análise Fluviométrica
+            </Typography><br/>
+            <TableContainer component={Paper} elevation={3} sx={{ maxWidth: '100vh' }}>
                 <Table size='small'>
                     <TableHead>
                         <TableRow>

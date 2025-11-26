@@ -13,6 +13,9 @@ import { MainScreenProps, ScreenType } from '../../interfaces/main.interface';
 import TopBar from '../menu/TopBar';
 import HomeScreen from '../screens/HomeScreen';
 import StreamflowScreen from '../screens/StreamflowScreen';
+import FlowDurationScreen from '../screens/FlowDurationScreen';
+
+import Q710Analysis from '../../../frontend.old/components/ui/pages/q710Analysis';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -24,10 +27,10 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                 return <></>;
             case 'streamflow':
                 return <StreamflowScreen />;
-            case 'percentile':
-                return <></>;
+            case 'flow-duration-curve':
+                return <FlowDurationScreen />;
             case 'q710':
-                return <></>;
+                return <Q710Analysis onBack={null}/>;
             default:
                 return <HomeScreen stationData={props.stationData}/>;
         }
@@ -60,8 +63,16 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={() => { if (props.onBack) props.onBack(); }} autoFocus>
+                        <Button
+                            variant='outlined'
+                            onClick={() => setDialogOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            variant='contained'
+                            onClick={() => { if (props.onBack) props.onBack(); }} autoFocus
+                        >
                             Confirmar
                         </Button>
                     </DialogActions>

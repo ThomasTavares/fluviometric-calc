@@ -92,10 +92,11 @@ function StreamflowScreen(): JSX.Element {
                 sx={{ 
                     flexGrow: 1,
                     overflow: 'auto',
-                    maxHeight: '80vh'
+                    maxHeight: '80vh',
+                    borderRadius: 1
                 }}
             >
-                <Table size='small' stickyHeader sx={{ display: isImporting ? 'none' : '' }}>
+                <Table size='small' stickyHeader sx={{ display: (isImporting || importError) ? 'none' : '' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{

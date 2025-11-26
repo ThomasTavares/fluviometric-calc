@@ -18,8 +18,6 @@ export interface BackendAPI {
 
     streamflow: {
         getForExport: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<DailyFlowsRow[]>>;
-        analyzeNullFlows: (stationId: string, startDate?: string, endDate?: string) => Promise<any>;
-        getNullFlowsSummary: (stationId: string, startDate?: string, endDate?: string) => Promise<any>;
     };
 
     analysis: {
@@ -33,9 +31,6 @@ export interface BackendAPI {
         calculateFlowDurationCurve: (stationId: string, dateRange?: { startDate: string; endDate: string }, numberOfPoints?: number) => Promise<any>;
         calculateQ710: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
     };
-
-    getDatabaseStatus: () => Promise<any>;
-    getDatabaseInfo: () => Promise<any>;
 }
 
 declare global {
