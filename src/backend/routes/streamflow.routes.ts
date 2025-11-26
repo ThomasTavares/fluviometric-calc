@@ -4,7 +4,7 @@ import { StreamflowController } from "../controllers/streamflow.controller";
 export function registerStreamflowRoutes(controller: StreamflowController): void {
     ipcMain.handle(
         "streamflow:getForExport",
-        async (event, stationId: string, startDate?: string, endDate?: string) => {
+        async (_event, stationId: string, startDate?: string, endDate?: string) => {
             return await controller.handleGetStreamflowsForExport(stationId, startDate, endDate);
         }
     );

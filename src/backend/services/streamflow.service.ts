@@ -1,13 +1,13 @@
 import Database from "better-sqlite3";
 import { safeDbQueryAll } from "../utils/db.util";
 
-interface ServiceResponse<T> {
+export interface ServiceResponse<T> {
     success: boolean;
     data?: T;
     error?: string;
 }
 
-interface DailyFlowsRow {
+export interface DailyFlowsRow {
     station_id: string;
     year: number;
     month: number;
