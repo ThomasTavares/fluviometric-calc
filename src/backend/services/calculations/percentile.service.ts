@@ -33,7 +33,7 @@ interface AllPercentilesResult {
     };
 }
 
-interface FlowDurationCurveData {
+export interface FlowDurationCurveData {
     station_id: string;
     total_records: number;
     date_range?: {

@@ -21,10 +21,10 @@ import SideBarProps from '../../interfaces/sidebar.interface';
 
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
-    { label: 'Pré-Processamento', key: 'pre-processing' },
+    /* { label: 'Pré-Processamento', key: 'pre-processing' }, */
     { label: 'Dados Fluviométricos', key: 'streamflow' },
-    { label: 'Curva de Permanência', key: 'percentile' },
-    { label: 'Vazão Q710', key: 'q710' }
+    { label: 'Curva de Permanência', key: 'flow-duration-curve' },
+    { label: 'Vazão Q7,10', key: 'q710' }
 ];
 
 function SideBar(props: SideBarProps): JSX.Element {
@@ -44,7 +44,7 @@ function SideBar(props: SideBarProps): JSX.Element {
                 return <TuneRoundedIcon />;
             case 'streamflow':
                 return <TableChartOutlinedIcon />;
-            case 'percentile':
+            case 'flow-duration-curve':
                 return <TimelineIcon />;
             case 'q710':
                 return <BarChartRoundedIcon />;

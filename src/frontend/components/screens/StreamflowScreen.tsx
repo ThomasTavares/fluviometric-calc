@@ -20,7 +20,7 @@ function StreamflowScreen(): JSX.Element {
     const [tablePage, setTablePage] = useState<number>(0);
 
     const stationId = sessionStorage.getItem('stationId');
-    const initDate = sessionStorage.getItem('initDate');
+    const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
 
     if (!stationId) {
@@ -37,16 +37,16 @@ function StreamflowScreen(): JSX.Element {
         setImportError('');
 
         try {
-            const result: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(stationId,
-                                                                                                             initDate || undefined,
+            const response: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(stationId,
+                                                                                                             startDate || undefined,
                                                                                                              endDate || undefined
                                                                                                             );
-            if (result.success && result.data) {
-                setStreamflowData(result.data);
+            if (response.success && response.data) {
+                setStreamflowData(response.data);
                 console.log('Imported streamflow data successfully.');
             } else {
-                setImportError(result.error || 'Failed to import streamflow data.');
-                console.error('Import error:', result.error);
+                setImportError(response.error || 'Failed to import streamflow data.');
+                console.error('Import error:', response.error);
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -80,11 +80,7 @@ function StreamflowScreen(): JSX.Element {
                 flexDirection: 'column'
             }}
         >
-            {importError && (
-                <Alert severity='error' sx={{ mb: 2 }}>
-                    {importError}
-                </Alert>
-            )}
+            {importError && (<Alert severity='error' sx={{ mb: 2 }}>{importError}</Alert>)}
 
             {isImporting && <LinearProgress />}
 

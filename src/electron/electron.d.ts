@@ -1,4 +1,5 @@
 import { ServiceResponse, DailyFlowsRow } from "../backend/services/streamflow.service";
+import { FlowDurationCurveData } from "../backend/services/calculations/percentile.service";
 
 export interface BackendAPI {
     stations: {
@@ -21,14 +22,14 @@ export interface BackendAPI {
     };
 
     analysis: {
-        calculatePercentile: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculatePercentileWithMethod: (stationId: string, percentile: number, method: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        compareAllPercentileMethods: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        comparePercentileMethods: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculateAllPercentiles: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculateCustomPercentiles: (stationId: string, percentiles: number[], dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculateCustomPercentilesWithMethod: (stationId: string, percentiles: number[], method: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculateFlowDurationCurve: (stationId: string, dateRange?: { startDate: string; endDate: string }, numberOfPoints?: number) => Promise<any>;
+        //calculatePercentile: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //calculatePercentileWithMethod: (stationId: string, percentile: number, method: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //compareAllPercentileMethods: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //comparePercentileMethods: (stationId: string, percentile: number, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //calculateAllPercentiles: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //calculateCustomPercentiles: (stationId: string, percentiles: number[], dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        //calculateCustomPercentilesWithMethod: (stationId: string, percentiles: number[], method: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+        calculateFlowDurationCurve: (stationId: string, dateRange?: { startDate: string; endDate: string }, numberOfPoints?: number) => Promise<ServiceResponse<FlowDurationCurveData>>;
         calculateQ710: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
     };
 }
