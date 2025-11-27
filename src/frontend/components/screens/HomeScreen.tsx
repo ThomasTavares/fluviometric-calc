@@ -1,4 +1,4 @@
-import { JSX, ReactNode } from 'react';
+import { JSX } from 'react';
 
 import Box from '@mui/material/Box'; 
 import Typography from '@mui/material/Typography';
@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import { MainScreenProps } from '../../interfaces/main.interface';
 import { Station } from '../../../backend/db';
 
-const stationInfoMap: { label: ReactNode; key: keyof Station }[] = [
+const stationInfoMap: { label: string; key: keyof Station }[] = [
     { label: 'Código', key: 'id' },
     { label: 'Nome', key: 'name' },
     { label: 'Tipo', key: 'type' },
@@ -25,7 +25,7 @@ const stationInfoMap: { label: ReactNode; key: keyof Station }[] = [
     { label: 'Município', key: 'city_name' },
     { label: 'Responsável', key: 'responsible_sigla' },
     { label: 'Operadora', key: 'operator_sigla' },
-    { label: <>Área Drenagem (m<sup>2</sup>)</>, key: 'drainage_area' },
+    { label: 'Área Drenagem (m²)', key: 'drainage_area' },
     { label: 'Latitude', key: 'latitude' },
     { label: 'Longitude', key: 'longitude' },
     { label: 'Altitude (m)', key: 'altitude' }

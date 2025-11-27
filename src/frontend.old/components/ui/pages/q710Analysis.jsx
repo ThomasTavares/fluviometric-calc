@@ -1,31 +1,23 @@
 import { useState } from "react";
-import { BackButton, StationListButton, PrimaryButton } from "../buttons/Buttons";
+import { PrimaryButton } from "../buttons/Buttons";
 
 function Q710Analysis({ onBack }) {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [stationId, setStationId] = useState("70100000");
-    const [dateRange, setDateRange] = useState({
-        startDate: "",
-        endDate: "",
-    });
+
+    const stationId = sessionStorage.getItem('stationId');
+    const startDate = sessionStorage.getItem('startDate');
+    const endDate = sessionStorage.getItem('endDate');
+
+    if (!stationId) {
+        return (<>{renderError('Código da Estação não disponível')}</>);
+    }
+
+    const dateRange = (startDate && endDate) ? { startDate, endDate } : { startDate: "", endDate: "" };
 
     // Estados para gráficos
     const [selectedDistributions, setSelectedDistributions] = useState(["Log-Pearson III"]);
     const [showDistributionChart, setShowDistributionChart] = useState(false);
-
-    // Buscar estações disponíveis
-    const [stations, setStations] = useState([]);
-    const [loadingStations, setLoadingStations] = useState(false);
-
-    const loadStations = async () => {
-        setLoadingStations(true);
-        const res = await window.backendApi.stations.getAll();
-        if (res.success) {
-            setStations(res.data);
-        }
-        setLoadingStations(false);
-    };
 
     // Calcular Q7,10
     const calculateQ710 = async () => {
@@ -798,7 +790,6 @@ function Q710Analysis({ onBack }) {
             </div>
         );
     };
-
  
     const renderDistributionChart = (data) => {
         if (selectedDistributions.length === 0) return null;
@@ -1141,8 +1132,6 @@ function Q710Analysis({ onBack }) {
 
     return (
         <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "1400px", margin: "0 auto" }}>
-            <BackButton onBack={onBack} />
-
             <h1 style={{ color: "#1976D2", borderBottom: "3px solid #1976D2", paddingBottom: "10px" }}>
                 💧 Análise Q7,10 - Vazão Mínima de 7 Dias com Período de Retorno de 10 Anos
             </h1>
@@ -1174,44 +1163,7 @@ function Q710Analysis({ onBack }) {
                     borderRadius: "5px",
                 }}
             >
-                <h3 style={{ marginTop: "0" }}>🎯 Configurações do Cálculo</h3>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px", marginBottom: "15px" }}>
-                    <div>
-                        <label style={labelStyle}>ID da Estação:</label>
-                        <input
-                            type="text"
-                            value={stationId}
-                            onChange={(e) => setStationId(e.target.value)}
-                            placeholder="Ex: 70100000"
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={labelStyle}>Data Inicial (opcional):</label>
-                        <input
-                            type="date"
-                            value={dateRange.startDate}
-                            onChange={(e) => setDateRange((prev) => ({ ...prev, startDate: e.target.value }))}
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={labelStyle}>Data Final (opcional):</label>
-                        <input
-                            type="date"
-                            value={dateRange.endDate}
-                            onChange={(e) => setDateRange((prev) => ({ ...prev, endDate: e.target.value }))}
-                            style={inputStyle}
-                        />
-                    </div>
-                </div>
-
                 <div style={{ display: "flex", alignItems: "center", gap: "15px", flexWrap: "wrap" }}>
-                    <StationListButton onClick={loadStations} loading={loadingStations} style={{ flex: "0 0 auto" }} />
-
                     <PrimaryButton
                         onClick={calculateQ710}
                         disabled={loading}
@@ -1223,29 +1175,7 @@ function Q710Analysis({ onBack }) {
                     >
                         🚀 Calcular Q7,10
                     </PrimaryButton>
-
-                    <span style={{ fontSize: "13px", color: "#666" }}>
-                        {stations.length > 0 && `(${stations.length} estações disponíveis)`}
-                    </span>
                 </div>
-
-                {stations.length > 0 && (
-                    <div style={{ marginTop: "15px" }}>
-                        <label style={labelStyle}>Ou selecione uma estação:</label>
-                        <select
-                            onChange={(e) => setStationId(e.target.value)}
-                            value={stationId}
-                            style={{ ...inputStyle, fontSize: "14px" }}
-                        >
-                            <option value="">Selecione uma estação</option>
-                            {stations.map((station) => (
-                                <option key={station.id} value={station.id}>
-                                    {station.id} - {station.name} ({station.river_name})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
             </div>
 
             {/* Informações sobre o método */}

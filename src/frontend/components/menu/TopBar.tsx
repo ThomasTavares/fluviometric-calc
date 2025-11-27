@@ -4,7 +4,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
 import TopBarProps from '../../interfaces/topbar.interface';
 import SideBar from './SideBar';
@@ -19,10 +19,10 @@ function TopBar(props: TopBarProps): JSX.Element {
                 return 'Pré-Processamento';
             case 'streamflow':
                 return 'Dados Fluviométricos';
-            case 'percentile':
+            case 'flow-duration-curve':
                 return 'Curva de Permanência';
             case 'q710':
-                return 'Vazão Q710';
+                return 'Vazão Q7,10';
             default:
                 return 'Informações Estação';
         }
@@ -40,7 +40,7 @@ function TopBar(props: TopBarProps): JSX.Element {
                         sx={{ mr: 1 }}
                         onClick={() => setSideOpen(true)}
                     >
-                        <MenuIcon />
+                        <MenuRoundedIcon />
                     </IconButton>
                     <Typography variant='h6'>
                         {renderScreenName()}
