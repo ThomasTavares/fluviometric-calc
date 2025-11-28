@@ -28,10 +28,19 @@ if (started) {
 
 const dbManager = DatabaseManager.getInstance();
 
+const getAssetPath = () => {
+    if (app.isPackaged) {
+        return path.join(process.resourcesPath, "assets");
+    } else {
+        return path.join(app.getAppPath(), "src", "assets");
+    }
+}
+
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
         width: 1400,
         height: 900,
+        icon: path.join(getAssetPath(), "icon.png"),
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
@@ -49,11 +58,9 @@ const createWindow = () => {
         console.log("🚀 Running in development mode with Vite");
         console.log("🔗 URL:", MAIN_WINDOW_VITE_DEV_SERVER_URL);
     } else {
-        const indexPath = path.join(__dirname, "../../index.html");
+        const indexPath = path.join(__dirname, "../renderer/main_window/index.html");
 
-        console.log(" Tentando carregar index.html de:", indexPath);
-        console.log(" Caminho existe?", require("fs").existsSync(indexPath));
-
+        console.log("Loading production HTML from:", indexPath);
         mainWindow.loadFile(indexPath);
     }
 

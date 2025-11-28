@@ -1,8 +1,8 @@
 {
   "name": "fluviometric-calc",
-  "productName": "fluviometric-calc",
+  "productName": "Sistema de Análise Fluviométrica",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Uma aplicação desktop para análise de dados fluviométricos, incluindo cálculo de curvas de permanência, análise Q7,10 e outras ferramentas hidrológicas.",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -16,6 +16,14 @@
     "name": "Thomas Tavares Tomaz",
     "email": "166856008+ThomasTavares@users.noreply.github.com"
   },
+  "contributors": [
+    {
+      "name": "Thomas Tavares Tomaz"
+    },
+    {
+      "name": "Augusto Henrique de Souza Miranda"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^7.8.3",

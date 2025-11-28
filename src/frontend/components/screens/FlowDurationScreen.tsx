@@ -18,6 +18,8 @@ function FlowDurationScreen(): JSX.Element {
     const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
 
+    const markPercentiles = [98, 95, 90, 85, 80, 50, 10, 5];
+
     useEffect(() => {
         if (!stationId) {
             setServiceError('Station ID is missing in session storage.');
@@ -74,7 +76,7 @@ function FlowDurationScreen(): JSX.Element {
         >
             <LineChart
                 xAxis={[{ 
-                    label: 'Percentil (%)',
+                    label: 'Permanência (%)',
                     data: xData,
                     min: 0,
                     max: 100,
@@ -87,7 +89,7 @@ function FlowDurationScreen(): JSX.Element {
                     data: yData,
                     label: 'Vazão (m³/s)',
                     curve: 'linear',
-                    showMark: false
+                    showMark: (params) => markPercentiles.includes(xData[params.index]) ? true : false
                 }]}
                 sx={{
                     display: serviceError ? 'none' : 'block'

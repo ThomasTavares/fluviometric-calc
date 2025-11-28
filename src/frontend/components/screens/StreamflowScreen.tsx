@@ -84,15 +84,19 @@ function StreamflowScreen(): JSX.Element {
 
             {isImporting && <LinearProgress />}
 
+            {paginatedData.length === 0 && !isImporting && !importError && (
+                <Alert severity='info' sx={{ m: 2 }}>Nenhum dado de vazão disponível</Alert>
+            )}
+
             <TableContainer
-                sx={{ 
+                sx={{
                     flexGrow: 1,
                     overflow: 'auto',
                     maxHeight: '80vh',
                     borderRadius: 1
                 }}
             >
-                <Table size='small' stickyHeader sx={{ display: (isImporting || importError) ? 'none' : '' }}>
+                <Table size='small' stickyHeader sx={{ display: (isImporting || importError || paginatedData.length === 0) ? 'none' : '' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{
@@ -130,14 +134,7 @@ function StreamflowScreen(): JSX.Element {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginatedData.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={33} align='center' sx={{ py: 4 }}>
-                                    No streamflow data available
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            paginatedData.map((row, index) => (
+                        {paginatedData.map((row, index) => (
                                 <TableRow key={`${row.year}-${row.month}-${index}`} hover>
                                     <TableCell sx={{
                                         position: 'sticky',
@@ -174,7 +171,7 @@ function StreamflowScreen(): JSX.Element {
                                     })}
                                 </TableRow>
                             ))
-                        )}
+                        }
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -187,7 +184,7 @@ function StreamflowScreen(): JSX.Element {
                 rowsPerPage={rowsPerPage}
                 rowsPerPageOptions={[]}
                 
-                sx={{ display: isImporting ? 'none' : '' }}
+                sx={{ display: (isImporting || importError || paginatedData.length === 0) ? 'none' : '' }}
             />
         </Paper>
     );

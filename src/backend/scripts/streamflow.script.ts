@@ -280,7 +280,14 @@ async function importStreamflowFromState(db: Database.Database, stateName: strin
             throw new Error(`State '${stateName}' not configured`);
         }
 
-        const streamflowDir = path.join(process.cwd(), "src", "data", stateName, "dados-vazoes");
+        let basePath: string;
+        if (app && app.isPackaged) {
+            basePath = path.join(process.resourcesPath, "data");
+        } else {
+            basePath = path.join(process.cwd(), "src", "data");
+        }
+
+        const streamflowDir = path.join(basePath, stateName, "dados-vazoes");
 
         console.log(` Directory: ${streamflowDir}`);
         console.log(` Directory exists: ${fs.existsSync(streamflowDir)}`);

@@ -1,15 +1,28 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { AutoUnpackNativesPlugin } = require('@electron-forge/plugin-auto-unpack-natives');
 
 module.exports = {
   packagerConfig: {
-    asar: true,
+    asar: {
+      unpack: "*.{node,dll}",
+    },
+    ignore: [/node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/],
+    extraResource: [
+      './src/data',
+      './src/assets'
+    ],
+    icon: './src/assets/icon',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        authors: 'Augusto Henrique de Souza Miranda, Thomas Tavares Tomaz',
+        description: 'Uma aplicação desktop para análise de dados fluviométricos, incluindo cálculo de curvas de permanência, análise Q7,10 e outras ferramentas hidrológicas.',
+        setupIcon: './src/assets/icon.ico',
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -25,6 +38,7 @@ module.exports = {
     },
   ],
   plugins: [
+    new AutoUnpackNativesPlugin({}),
     {
       name: '@electron-forge/plugin-vite',
       config: {
