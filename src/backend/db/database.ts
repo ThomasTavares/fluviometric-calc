@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
+import { app } from "electron";
 
 export class DatabaseManager {
     private static instance: DatabaseManager;
@@ -32,8 +33,13 @@ export class DatabaseManager {
     }
 
     private getDatabasePath(): string {
-        const dbDirectory = path.resolve(__dirname);
-        return path.join(dbDirectory, "schema.db");
+        if (!app.isPackaged) {
+            const devDirectory = path.resolve(__dirname);
+            return path.join(devDirectory, "schema.db");
+        } else {
+            const userDataPath = app.getPath("userData");
+            return path.join(userDataPath, "fluviometric.db");
+        }
     }
 
     private ensureDirectoryExists(directory: string): void {

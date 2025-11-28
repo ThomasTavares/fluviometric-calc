@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { PrimaryButton } from "../buttons/Buttons";
+import { useState, useEffect } from "react";
 
 function Q710Analysis({ onBack }) {
     const [result, setResult] = useState(null);
@@ -1130,12 +1129,12 @@ function Q710Analysis({ onBack }) {
         </div>
     );
 
+    useEffect(() => {
+        calculateQ710();
+    }, []);
+
     return (
         <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "1400px", margin: "0 auto" }}>
-            <h1 style={{ color: "#1976D2", borderBottom: "3px solid #1976D2", paddingBottom: "10px" }}>
-                💧 Análise Q7,10 - Vazão Mínima de 7 Dias com Período de Retorno de 10 Anos
-            </h1>
-
             {/* Descrição */}
             <div
                 style={{
@@ -1152,30 +1151,6 @@ function Q710Analysis({ onBack }) {
                     retorno de 10 anos (probabilidade de 90% de não excedência). É um parâmetro fundamental para outorga
                     de recursos hídricos, definição de vazões ecológicas e estudos de disponibilidade hídrica.
                 </p>
-            </div>
-
-            {/* Configurações */}
-            <div
-                style={{
-                    marginBottom: "30px",
-                    padding: "20px",
-                    background: "#f5f5f5",
-                    borderRadius: "5px",
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: "15px", flexWrap: "wrap" }}>
-                    <PrimaryButton
-                        onClick={calculateQ710}
-                        disabled={loading}
-                        style={{
-                            fontSize: "16px",
-                            padding: "12px 24px",
-                            flex: "0 0 auto",
-                        }}
-                    >
-                        🚀 Calcular Q7,10
-                    </PrimaryButton>
-                </div>
             </div>
 
             {/* Informações sobre o método */}

@@ -54,8 +54,15 @@ async function importStationsFromState(db: Database.Database, stateName: string)
             throw new Error(`State '${stateName}' not configured`);
         }
 
-        const isDev = !app.isPackaged;
-        const stationsFile = path.join(process.cwd(), "src", "data", stateName, "metadados-estacoes", stateConfig.file);
+        let basePath: string;
+
+        if (app.isPackaged) {
+            basePath = path.join(process.resourcesPath, "data");
+        } else {
+            basePath = path.join(app.getAppPath(), "src", "data");
+        }
+
+        const stationsFile = path.join(basePath, stateName, "metadados-estacoes", stateConfig.file);
 
         console.log(`\nImporting stations from ${stateConfig.name}...`);
         console.log(`File: ${stationsFile}`);
