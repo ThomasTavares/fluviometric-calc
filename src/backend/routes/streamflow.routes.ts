@@ -38,4 +38,8 @@ export function registerStreamflowRoutes(controller: StreamflowController): void
             }
         }
     );
+    
+    ipcMain.handle("streamflow:getAvailableDateRange", async (_, stationId: string) => {
+        return controller.getAvailableDateRange(stationId);
+    });
 }

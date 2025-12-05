@@ -21,7 +21,7 @@ import SideBarProps from '../../interfaces/sidebar.interface';
 
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
-    /* { label: 'Pré-Processamento', key: 'pre-processing' }, */
+    { label: 'Pré-Processamento', key: 'pre-processing' },
     { label: 'Dados Fluviométricos', key: 'streamflow' },
     { label: 'Curva de Permanência', key: 'flow-duration-curve' },
     { label: 'Vazão Q7,10', key: 'q710' }

@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("backendApi", {
             ipcRenderer.invoke("streamflow:analyzeNullFlows", stationId, startDate, endDate),
         getNullFlowsSummary: (stationId, startDate, endDate) =>
             ipcRenderer.invoke("streamflow:getNullFlowsSummary", stationId, startDate, endDate),
+        getAvailableDateRange: (stationId) => ipcRenderer.invoke("streamflow:getAvailableDateRange", stationId),
     },
 
     analysis: {

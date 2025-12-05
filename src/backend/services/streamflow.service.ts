@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { safeDbQueryAll } from "../utils/db.util";
+import { safeDbQueryAll, safeDbQueryGet } from "../utils/db.util";
 
 export interface ServiceResponse<T> {
     success: boolean;
@@ -50,12 +50,12 @@ interface NullFlowAnalysis {
     year: number;
     month: number;
     total_days: number;
-    null_count: number; 
-    zero_count: number; 
-    valid_count: number; 
+    null_count: number;
+    zero_count: number;
+    valid_count: number;
     null_percentage: number;
-    zero_percentage: number; 
-    completeness: number; 
+    zero_percentage: number;
+    completeness: number;
 }
 
 interface NullFlowSummary {
@@ -79,7 +79,6 @@ interface NullFlowSummary {
     }>;
     by_month: NullFlowAnalysis[];
 }
-
 
 export class StreamflowService {
     private db: Database.Database;
@@ -402,5 +401,33 @@ export class StreamflowService {
             success: true,
             data: result,
         };
+    }
+
+    getAvailableDateRange(stationId: string): ServiceResponse<{
+        min_date: string;
+        max_date: string;
+        total_records: number;
+    }> {
+        if (!stationId || stationId.trim() === "") {
+            return {
+                success: false,
+                error: "Station ID is required",
+            };
+        }
+
+        const query = `
+        SELECT 
+            MIN(date) as min_date,
+            MAX(date) as max_date,
+            COUNT(*) as total_records
+        FROM daily_Streamflows
+        WHERE station_id = ?
+    `;
+
+        return safeDbQueryGet<{
+            min_date: string;
+            max_date: string;
+            total_records: number;
+        }>(this.db, query, [stationId], "getting date range");
     }
 }

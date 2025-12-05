@@ -13,6 +13,7 @@ import { MainScreenProps, ScreenType } from '../../interfaces/main.interface';
 import TopBar from '../menu/TopBar';
 import HomeScreen from '../screens/HomeScreen';
 import StreamflowScreen from '../screens/StreamflowScreen';
+import PreProcessingScreen from '../screens/PreProcessingScreen';
 import FlowDurationScreen from '../screens/FlowDurationScreen';
 
 import Q710Analysis from '../../../frontend.old/components/ui/pages/q710Analysis';
@@ -24,7 +25,7 @@ function MainScreen(props: MainScreenProps): JSX.Element {
     const renderScreen = ():JSX.Element => {
         switch (currentScreen) {
             case 'pre-processing':
-                return <></>;
+                return <PreProcessingScreen />;;
             case 'streamflow':
                 return <StreamflowScreen />;
             case 'flow-duration-curve':

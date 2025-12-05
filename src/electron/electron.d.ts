@@ -1,6 +1,20 @@
 import { ServiceResponse, DailyFlowsRow } from "../backend/services/streamflow.service";
 import { FlowDurationCurveData } from "../backend/services/calculations/percentile.service";
 
+interface DateRangeInfo {
+    min_date: string;
+    max_date: string;
+    total_records: number;
+}
+
+interface NullFlowsSummary {
+    total_records: number;
+    null_count: number;
+    zero_count: number;
+    valid_count: number;
+    completeness_percentage: number;
+}
+
 export interface BackendAPI {
     stations: {
         getAll: () => Promise<any>;
@@ -19,6 +33,9 @@ export interface BackendAPI {
 
     streamflow: {
         getForExport: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<DailyFlowsRow[]>>;
+        analyzeNullFlows: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<any>>;
+        getNullFlowsSummary: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<NullFlowsSummary>>;
+        getAvailableDateRange: (stationId: string) => Promise<ServiceResponse<DateRangeInfo>>;
     };
 
     analysis: {

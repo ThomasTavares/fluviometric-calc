@@ -31,4 +31,11 @@ export class StreamflowController {
 
         return this.streamflowService.getNullFlowsSummary(stationId, startDate, endDate);
     }
+
+    getAvailableDateRange(stationId: string) {
+        if (!stationId || typeof stationId !== "string") {
+            return { success: false, error: "Valid station ID is required" };
+        }
+        return this.streamflowService.getAvailableDateRange(stationId);
+    }
 }
