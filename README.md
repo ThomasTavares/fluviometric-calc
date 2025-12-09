@@ -1,6 +1,8 @@
 # Sistema de Análise Fluviométrica
 Uma aplicação desktop para análise de dados fluviométricos, incluindo cálculo de curvas de permanência, análise Q7,10 e outras ferramentas hidrológicas.
 
+<div align="middle"><img src="src/assets/icon.ico" height="80"/></div>
+
 ## Descrição
 Este projeto é um sistema de análise hidrológica desenvolvido como parte da disciplina **Projeto Integrador I** do curso de bacharelado em **Engenharia da Computação**, da **Universidade Federal de Santa Catarina (UFSC) - Campus Araranguá**.
 
