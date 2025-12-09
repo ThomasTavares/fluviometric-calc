@@ -62,3 +62,6 @@ O projeto segue uma estrutura modular separando o processo principal do Electron
 
 ## Licença
 Este projeto está licenciado sob a Licença MIT.
+
+---
+<a href="https://www.flaticon.com/free-icons/sea" title="sea icons">Sea icons created by Yobany_MTOM - Flaticon</a>
