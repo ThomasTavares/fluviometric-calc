@@ -100,15 +100,16 @@ O sistema utiliza o **SQLite**. A configuração é automática:
 A organização das pastas segue o padrão modular do Electron Forge com Vite:
 
   * `/src/electron/`: Contém o processo principal (Main Process) e scripts de preload, responsáveis pela comunicação com o sistema operacional e criação de janelas.
-  * `/src/frontend/`: Contém a interface do usuário (Renderer Process).
-      * `components/`: Componentes React reutilizáveis e telas principais.
-      * `services/`: Integração com a API do backend via IPC.
   * `/src/backend/`: Lógica de negócios e acesso a dados.
       * `controllers/`: Gerencia as requisições que chegam via IPC.
       * `db/`: Configuração do SQLite e schemas.
       * `routes/`: Definição dos canais de comunicação (endpoints IPC).
       * `services/`: Algoritmos de cálculo (Q7,10, Percentis).
+  * `/src/frontend/`: Contém a interface do usuário (Renderer Process).
+      * `components/`: Componentes React reutilizáveis e telas principais.
+      * `services/`: Integração com a API do backend via IPC.
   * `/src/data/`: Arquivos estáticos JSON com metadados das estações e registros de vazão iniciais.
+  * `/src/frontend.old/`: Contém as interfaces *placeholders* e de testes iniciais do projeto.
 
 ## 7\. Interface
 
