@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { JSX, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box'; 
 import Typography from '@mui/material/Typography';
@@ -9,9 +9,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { MainScreenProps } from '../../interfaces/main.interface';
 import { Station } from '../../../backend/db';
+import StationInfoDialog from '../dialogs/StationInfoDialog';
 
 const stationInfoMap: { label: string; key: keyof Station }[] = [
     { label: 'Código', key: 'id' },
@@ -32,7 +37,77 @@ const stationInfoMap: { label: string; key: keyof Station }[] = [
 ];
 
 function HomeScreen(props: MainScreenProps): JSX.Element {
-    const { stationData } = props;
+    const [stationData, setStationData] = useState<Station | null>(
+        (props.stationData && props.stationData.id !== 'temp') ? props.stationData : null
+    );
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
+
+    useEffect(() => {
+        loadStationData();
+    }, []);
+
+    const loadStationData = async () => {
+        const stationId = sessionStorage.getItem('stationId');
+        
+        if (!stationId || stationId === 'temp') {
+            setError('Station ID is missing');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const result = await window.backendApi.stations.getById(stationId);
+            
+            if (result.success && result.data) {
+                setStationData(result.data);
+            } else {
+                setError(result.error || 'Erro ao carregar estação');
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleEditClick = () => {
+        setShowEditDialog(true);
+    };
+
+    const handleDialogClose = () => {
+        setShowEditDialog(false);
+    };
+
+    const handleSaved = () => {
+        setShowEditDialog(false);
+        loadStationData();
+    };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error && !stationData) {
+        return (
+            <Alert severity='warning'>
+                {error}
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
+    }
 
     return (
         <Box sx={{
@@ -81,6 +156,28 @@ function HomeScreen(props: MainScreenProps): JSX.Element {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {stationData && (
+                <Box sx={{ mt: 2 }}>
+                    <Button
+                        variant='outlined'
+                        startIcon={<EditIcon />}
+                        onClick={handleEditClick}
+                    >
+                        Editar Informações da Estação
+                    </Button>
+                </Box>
+            )}
+
+            {stationData && (
+                <StationInfoDialog
+                    open={showEditDialog}
+                    stationCode={stationData.id}
+                    initialData={stationData}
+                    onClose={handleDialogClose}
+                    onSaved={handleSaved}
+                />
+            )}
         </Box>
     );
 }

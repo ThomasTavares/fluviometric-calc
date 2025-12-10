@@ -54,6 +54,7 @@
     "@mui/x-charts": "^8.20.0",
     "@mui/x-date-pickers": "^8.14.1",
     "@vitejs/plugin-react": "^5.0.2",
+    "axios": "^1.13.2",
     "better-sqlite3": "^12.4.1",
     "dayjs": "^1.11.18",
     "electron-squirrel-startup": "^1.0.1",

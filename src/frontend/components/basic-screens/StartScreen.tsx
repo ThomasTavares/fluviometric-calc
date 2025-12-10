@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
+import SyncIcon from '@mui/icons-material/Sync';
 
 import { StartScreenProps } from '../../interfaces/start.interface';
 import { validateStationCode } from '../../services/station.api';
@@ -61,6 +63,12 @@ function StartScreen(props: StartScreenProps): JSX.Element {
         });
     };
 
+    const handleSyncMode = () => {
+        if (props.onSyncMode) {
+            props.onSyncMode();
+        }
+    };
+
     return (
         <Box sx={{ 
                 minHeight: '100vh',
@@ -80,7 +88,11 @@ function StartScreen(props: StartScreenProps): JSX.Element {
                 }}
             >
                 <Typography variant='h4' gutterBottom>
-                    Insira as Informações da Estação
+                    Sistema de Análise Fluviométrica
+                </Typography>
+
+                <Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
+                    Selecione uma estação existente ou sincronize uma nova
                 </Typography>
 
                 <Stack spacing={3} sx={{ width: '100%', maxWidth: 400 }}>
@@ -106,6 +118,7 @@ function StartScreen(props: StartScreenProps): JSX.Element {
                             setValidationError('');
                             setStationName('');
                         }}
+                        placeholder='Ex: 70100000'
                     />
 
                     <Button 
@@ -114,7 +127,29 @@ function StartScreen(props: StartScreenProps): JSX.Element {
                         onClick={handleStart}
                         disabled={!stationCode || isValidating}
                         startIcon={isValidating ? <CircularProgress size={20} /> : null}
-                    >{isValidating ? 'Validando...' : 'Confirmar'}</Button>
+                    >{isValidating ? 'Validando...' : 'Acessar Sistema'}</Button>
+
+                    <Divider>
+                        <Typography variant='caption' color='text.secondary'>
+                            OU
+                        </Typography>
+                    </Divider>
+
+                    <Button
+                        variant='outlined'
+                        size='large'
+                        onClick={handleSyncMode}
+                        startIcon={<SyncIcon />}
+                        disabled={isValidating}
+                    >
+                        Sincronizar Nova Estação
+                    </Button>
+
+                    <Alert severity='info' sx={{ mt: 2 }}>
+                        <Typography variant='caption'>
+                            Use "Sincronizar Nova Estação" para adicionar dados de uma estação que ainda não está no sistema
+                        </Typography>
+                    </Alert>
                 </Stack>
             </Paper>
         </Box>

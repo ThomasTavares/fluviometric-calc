@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld("backendApi", {
     stations: {
         getAll: () => ipcRenderer.invoke("stations:getAll"),
         getById: (id) => ipcRenderer.invoke("stations:getById", id),
+        update: (stationData) => ipcRenderer.invoke("stations:update", stationData),
         search: (filters) => ipcRenderer.invoke("stations:search", filters),
         count: () => ipcRenderer.invoke("stations:count"),
         import: () => ipcRenderer.invoke("stations:import"),
@@ -139,5 +140,16 @@ contextBridge.exposeInMainWorld("backendApi", {
     },
     getDatabaseInfo: async () => {
         return await ipcRenderer.invoke("database:info");
+    },
+
+    sync: {
+        execute: (params) => ipcRenderer.invoke("sync:execute", params),
+        cancel: () => ipcRenderer.invoke("sync:cancel"),
+        onProgress: (callback) => {
+            ipcRenderer.on("sync:progress", (_event, progress) => callback(progress));
+        },
+        removeProgressListener: () => {
+            ipcRenderer.removeAllListeners("sync:progress");
+        },
     },
 });

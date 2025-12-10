@@ -22,6 +22,10 @@ import { Q710Service } from "../backend/services/calculations/q710.service";
 import { Q710Controller } from "../backend/controllers/q710.controller";
 import { registerQ710Routes } from "../backend/routes/q710.routes";
 
+import { DataSyncService } from "../backend/services/data-sync.service";
+import { SyncController } from "../backend/controllers/sync.controller";
+import { registerSyncRoutes } from "../backend/routes/sync.routes";
+
 if (started) {
     app.quit();
 }
@@ -69,6 +73,8 @@ const createWindow = () => {
     }
 
     console.log("=========================\n");
+
+    return mainWindow;
 };
 
 const isDatabaseEmpty = (db) => {
@@ -145,20 +151,29 @@ const setupPercentileModule = (db) => {
     const percentileService = new PercentileService(db);
     const percentileController = new PercentileController(percentileService);
     registerPercentileRoutes(percentileController);
-    console.log("Percentile  routes registered successfully");
+    console.log("Percentile routes registered successfully");
 };
 
 const setupQ710Module = (db) => {
     const q710Service = new Q710Service(db);
     const q710Controller = new Q710Controller(q710Service);
     registerQ710Routes(q710Controller);
+    console.log("Q710 routes registered successfully");
 };
 
-const initializeModules = (db) => {
+const setupSyncModule = (db, mainWindow) => {
+    const syncService = new DataSyncService(db);
+    const syncController = new SyncController(syncService);
+    registerSyncRoutes(syncController, mainWindow);
+    console.log("Sync routes registered successfully");
+};
+
+const initializeModules = (db, mainWindow) => {
     setupStationModule(db);
     setupStreamflowModule(db);
     setupPercentileModule(db);
     setupQ710Module(db);
+    setupSyncModule(db, mainWindow);
     console.log("\nAll modules initialized successfully");
 };
 
@@ -174,19 +189,21 @@ const initializeDatabase = async () => {
     console.log("Database initialized successfully\n");
 
     await populateDatabaseIfNeeded(db);
-    initializeModules(db);
 
     return db;
 };
 
 const initializeApp = async () => {
     try {
-        await initializeDatabase();
-        createWindow();
+        const db = await initializeDatabase();
+        const mainWindow = createWindow();
+        
+        initializeModules(db, mainWindow);
 
         app.on("activate", () => {
             if (BrowserWindow.getAllWindows().length === 0) {
-                createWindow();
+                const newWindow = createWindow();
+                initializeModules(db, newWindow);
             }
         });
     } catch (error) {

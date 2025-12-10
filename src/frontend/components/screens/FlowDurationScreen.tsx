@@ -3,6 +3,8 @@ import { JSX, useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import { LineChart } from '@mui/x-charts/LineChart';
 
@@ -21,8 +23,8 @@ function FlowDurationScreen(): JSX.Element {
     const markPercentiles = [98, 95, 90, 85, 80, 50, 10, 5];
 
     useEffect(() => {
-        if (!stationId) {
-            setServiceError('Station ID is missing in session storage.');
+        if (!stationId || stationId === 'temp') {
+            setServiceError('Station ID is missing');
             setLoading(false);
             return;
         }
@@ -37,7 +39,11 @@ function FlowDurationScreen(): JSX.Element {
                 const response: ServiceResponse<FlowDurationCurveData> = await window.backendApi.analysis.calculateFlowDurationCurve(stationId, dateRange);
 
                 if (response.success && response.data) {
-                    setCurveData(response.data);
+                    if (!response.data.curve_points || response.data.curve_points.length === 0) {
+                        setServiceError('Não há dados fluviométricos disponíveis para esta estação');
+                    } else {
+                        setCurveData(response.data);
+                    }
                 } else {
                     setServiceError(response.error || 'Failed to load flow duration curve');
                 }
@@ -51,13 +57,39 @@ function FlowDurationScreen(): JSX.Element {
         fetchFlowDurationCurve();
     }, [stationId, startDate, endDate]);
 
-    if (serviceError){
-        return <Alert severity='error'>{serviceError}</Alert>;
+    if (!stationId || stationId === 'temp') {
+        return (
+            <Alert severity='warning'>
+                Station ID is missing
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
     }
-    else if (loading) {
+
+    if (serviceError && !loading) {
+        return (
+            <Alert severity='warning'>
+                {serviceError}
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
+    }
+
+    if (loading) {
         return <LinearProgress />;
     }
-    else if (!curveData || curveData.curve_points.length === 0) {
+
+    if (!curveData || curveData.curve_points.length === 0) {
         return <Alert severity='info'>Nenhum dado de vazão disponível</Alert>;
     }
 
@@ -91,10 +123,6 @@ function FlowDurationScreen(): JSX.Element {
                     curve: 'linear',
                     showMark: (params) => markPercentiles.includes(xData[params.index]) ? true : false
                 }]}
-                sx={{
-                    display: serviceError ? 'none' : 'block'
-                }}
-                loading={loading}
                 width={1000}
                 height={500}
                 margin={{ left: 20, right: 20, top: 20, bottom: 20 }}

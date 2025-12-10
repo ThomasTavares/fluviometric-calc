@@ -1,5 +1,6 @@
-import { Station } from "../../backend/db";
+import { Station } from '../../backend/db';
 
 export interface StartScreenProps {
     onInit: (data: Station) => void;
+    onSyncMode?: () => void;
 }
