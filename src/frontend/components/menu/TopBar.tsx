@@ -23,6 +23,8 @@ function TopBar(props: TopBarProps): JSX.Element {
                 return 'Curva de Permanência';
             case 'q710':
                 return 'Vazão Q7,10';
+            case 'sync':
+                return 'Sincronização Dados'
             default:
                 return 'Informações Estação';
         }

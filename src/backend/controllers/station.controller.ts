@@ -15,6 +15,26 @@ export class StationController {
         return this.stationService.getStationById(id);
     }
 
+    async handleUpdateStation(stationData: {
+        id: string;
+        name?: string;
+        type?: string;
+        additional_code?: string;
+        basin_code?: string;
+        sub_basin_code?: string;
+        river_name?: string;
+        state_name?: string;
+        city_name?: string;
+        responsible_sigla?: string;
+        operator_sigla?: string;
+        drainage_area?: number;
+        latitude?: number;
+        longitude?: number;
+        altitude?: number;
+    }) {
+        return this.stationService.updateStation(stationData);
+    }
+
     async handleSearchStations(filters: {
         name?: string;
         basin_code?: string;

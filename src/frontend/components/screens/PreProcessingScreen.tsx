@@ -35,7 +35,9 @@ function PreProcessingScreen(): JSX.Element {
         loadData();
     }, [stationId]);
 
-    const formatDateLocal = (dateString: string): string => {
+    const formatDateLocal = (dateString: string | null | undefined): string => {
+        if (!dateString) return 'N/A';
+        
         const [year, month, day] = dateString.split('-');
         return `${day}/${month}/${year}`;
     };
@@ -49,6 +51,12 @@ function PreProcessingScreen(): JSX.Element {
         try {
             const rangeResponse = await getAvailableDateRange(stationId);
             if (rangeResponse.success && rangeResponse.data) {
+                if (!rangeResponse.data.min_date || !rangeResponse.data.max_date) {
+                    setError('Não há dados fluviométricos disponíveis para esta estação');
+                    setLoading(false);
+                    return;
+                }
+
                 setDateRange(rangeResponse.data);
                 
                 const savedStartDate = sessionStorage.getItem('startDate');
@@ -157,8 +165,18 @@ function PreProcessingScreen(): JSX.Element {
         );
     }
 
-    if (error && !summary) {
-        return <Alert severity='error'>{error}</Alert>;
+    if (error && !dateRange) {
+        return (
+            <Alert severity='warning'>
+                {error}
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
     }
 
     return (

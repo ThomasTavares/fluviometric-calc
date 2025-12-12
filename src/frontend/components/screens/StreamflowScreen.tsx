@@ -10,6 +10,8 @@ import TableCell from '@mui/material/TableCell';
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 import { ServiceResponse, DailyFlowsRow } from '../../../backend/services/streamflow.service';
 
@@ -23,27 +25,34 @@ function StreamflowScreen(): JSX.Element {
     const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
 
-    if (!stationId) {
-        throw new Error('Station ID is missing in session storage.');
-    }
-
     useEffect(() => {
+        if (!stationId || stationId === 'temp') {
+            setImportError('Station ID is missing');
+            return;
+        }
         handleImport();
     }, []);
 
     const handleImport = async () => {
+        if (!stationId) return;
+
         console.log('Importing streamflow data for station: ', stationId);
         setIsImporting(true);
         setImportError('');
 
         try {
-            const response: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(stationId,
-                                                                                                             startDate || undefined,
-                                                                                                             endDate || undefined
-                                                                                                            );
+            const response: ServiceResponse<DailyFlowsRow[]> = await window.backendApi.streamflow.getForExport(
+                stationId,
+                startDate || undefined,
+                endDate || undefined
+            );
             if (response.success && response.data) {
-                setStreamflowData(response.data);
-                console.log('Imported streamflow data successfully.');
+                if (response.data.length === 0) {
+                    setImportError('Não há dados fluviométricos disponíveis para esta estação');
+                } else {
+                    setStreamflowData(response.data);
+                    console.log('Imported streamflow data successfully.');
+                }
             } else {
                 setImportError(response.error || 'Failed to import streamflow data.');
                 console.error('Import error:', response.error);
@@ -71,6 +80,36 @@ function StreamflowScreen(): JSX.Element {
         tablePage * rowsPerPage + rowsPerPage
     );
 
+    // Mostra aviso se não houver stationId ou se for estação temporária
+    if (!stationId || stationId === 'temp') {
+        return (
+            <Alert severity='warning'>
+                Station ID is missing
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
+    }
+
+    // Mostra aviso se houver erro ao carregar dados
+    if (importError && !isImporting) {
+        return (
+            <Alert severity='warning'>
+                {importError}
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
+                        Esta estação não possui dados fluviométricos no banco de dados. 
+                        Você pode sincronizar dados através do menu "Sincronizar Dados".
+                    </Typography>
+                </Box>
+            </Alert>
+        );
+    }
+
     return (
         <Paper
             elevation={3}
@@ -80,11 +119,9 @@ function StreamflowScreen(): JSX.Element {
                 flexDirection: 'column'
             }}
         >
-            {importError && (<Alert severity='error' sx={{ mb: 2 }}>{importError}</Alert>)}
-
             {isImporting && <LinearProgress />}
 
-            {paginatedData.length === 0 && !isImporting && !importError && (
+            {paginatedData.length === 0 && !isImporting && (
                 <Alert severity='info' sx={{ m: 2 }}>Nenhum dado de vazão disponível</Alert>
             )}
 
@@ -96,7 +133,7 @@ function StreamflowScreen(): JSX.Element {
                     borderRadius: 1
                 }}
             >
-                <Table size='small' stickyHeader sx={{ display: (isImporting || importError || paginatedData.length === 0) ? 'none' : '' }}>
+                <Table size='small' stickyHeader sx={{ display: (isImporting || paginatedData.length === 0) ? 'none' : '' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{
@@ -184,7 +221,7 @@ function StreamflowScreen(): JSX.Element {
                 rowsPerPage={rowsPerPage}
                 rowsPerPageOptions={[]}
                 
-                sx={{ display: (isImporting || importError || paginatedData.length === 0) ? 'none' : '' }}
+                sx={{ display: (isImporting || paginatedData.length === 0) ? 'none' : '' }}
             />
         </Paper>
     );

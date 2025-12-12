@@ -4,15 +4,35 @@ function Q710Analysis({ onBack }) {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const stationId = sessionStorage.getItem('stationId');
-    const startDate = sessionStorage.getItem('startDate');
-    const endDate = sessionStorage.getItem('endDate');
+    const stationId = sessionStorage.getItem("stationId");
+    const startDate = sessionStorage.getItem("startDate");
+    const endDate = sessionStorage.getItem("endDate");
 
-    if (!stationId) {
-        return (<>{renderError('Código da Estação não disponível')}</>);
+    if (!stationId || stationId === "temp") {
+        return (
+            <div
+                style={{
+                    padding: "20px",
+                    background: "#fff3e0",
+                    marginTop: "20px",
+                }}
+            >
+                <div style={{ marginTop: "0", }}>⚠️ Station ID is missing</div>
+                <div
+                    style={{
+                        fontSize: "14px",
+                        lineHeight: "1.6",
+                        marginTop: "15px",
+                    }}
+                >
+                    Esta estação não possui dados fluviométricos no banco de dados. Você pode sincronizar dados através
+                    do menu "Sincronizar Dados".
+                </div>
+            </div>
+        );
     }
 
-    const dateRange = (startDate && endDate) ? { startDate, endDate } : { startDate: "", endDate: "" };
+    const dateRange = startDate && endDate ? { startDate, endDate } : { startDate: "", endDate: "" };
 
     // Estados para gráficos
     const [selectedDistributions, setSelectedDistributions] = useState(["Log-Pearson III"]);
@@ -456,17 +476,17 @@ function Q710Analysis({ onBack }) {
                                 <tr>
                                     <th style={thStyle}>Distribuição</th>
                                     <th style={thStyle}>N° eventos</th>
-                                    <th style={thStyle}>IC Sup. 95%</th> 
-                                    <th style={thStyle}>Evento (m³/s)</th> 
-                                    <th style={thStyle}>IC Inf. 95%</th> 
-                                    <th style={thStyle}>Amplitude IC</th> 
-                                    <th style={thStyle}>Erro Padrão</th> 
-                                    <th style={thStyle}>Média</th> 
+                                    <th style={thStyle}>IC Sup. 95%</th>
+                                    <th style={thStyle}>Evento (m³/s)</th>
+                                    <th style={thStyle}>IC Inf. 95%</th>
+                                    <th style={thStyle}>Amplitude IC</th>
+                                    <th style={thStyle}>Erro Padrão</th>
+                                    <th style={thStyle}>Média</th>
                                     <th style={thStyle}>Variância</th>
-                                    <th style={thStyle}>Assimetria</th> 
-                                    <th style={thStyle}>Alfa</th> 
-                                    <th style={thStyle}>Beta</th> 
-                                    <th style={thStyle}>Gama</th> 
+                                    <th style={thStyle}>Assimetria</th>
+                                    <th style={thStyle}>Alfa</th>
+                                    <th style={thStyle}>Beta</th>
+                                    <th style={thStyle}>Gama</th>
                                     <th style={thStyle}>Status</th>
                                 </tr>
                             </thead>
@@ -620,9 +640,9 @@ function Q710Analysis({ onBack }) {
                                     data.all_distributions.map((dist) => ({
                                         Distribuição: dist.distribution,
                                         "N° eventos": dist.n_events,
-                                        "IC Sup. 95%": dist.ic_upper_95, 
-                                        "Evento (m³/s)": dist.event_m3s, 
-                                        "IC Inf. 95%": dist.ic_lower_95, 
+                                        "IC Sup. 95%": dist.ic_upper_95,
+                                        "Evento (m³/s)": dist.event_m3s,
+                                        "IC Inf. 95%": dist.ic_lower_95,
                                         "Amplitude IC": dist.ic_amplitude,
                                         "Erro Padrão": dist.std_error,
                                         Média: dist.mean,
@@ -789,7 +809,7 @@ function Q710Analysis({ onBack }) {
             </div>
         );
     };
- 
+
     const renderDistributionChart = (data) => {
         if (selectedDistributions.length === 0) return null;
 

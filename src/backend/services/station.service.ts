@@ -59,6 +59,124 @@ export class StationService {
         return result;
     }
 
+    updateStation(stationData: {
+        id: string;
+        name?: string;
+        type?: string;
+        additional_code?: string;
+        basin_code?: string;
+        sub_basin_code?: string;
+        river_name?: string;
+        state_name?: string;
+        city_name?: string;
+        responsible_sigla?: string;
+        operator_sigla?: string;
+        drainage_area?: number;
+        latitude?: number;
+        longitude?: number;
+        altitude?: number;
+    }): ServiceResponse<{ updated: boolean }> {
+        if (!stationData.id || stationData.id.trim() === "") {
+            return {
+                success: false,
+                error: "Station ID is required",
+            };
+        }
+
+        try {
+            const existing = this.db.prepare("SELECT id FROM stations WHERE id = ?").get(stationData.id);
+            
+            if (!existing) {
+                return {
+                    success: false,
+                    error: "Station not found",
+                };
+            }
+
+            const updates: string[] = [];
+            const params: any[] = [];
+
+            if (stationData.name !== undefined) {
+                updates.push("name = ?");
+                params.push(stationData.name);
+            }
+            if (stationData.type !== undefined) {
+                updates.push("type = ?");
+                params.push(stationData.type);
+            }
+            if (stationData.additional_code !== undefined) {
+                updates.push("additional_code = ?");
+                params.push(stationData.additional_code);
+            }
+            if (stationData.basin_code !== undefined) {
+                updates.push("basin_code = ?");
+                params.push(stationData.basin_code);
+            }
+            if (stationData.sub_basin_code !== undefined) {
+                updates.push("sub_basin_code = ?");
+                params.push(stationData.sub_basin_code);
+            }
+            if (stationData.river_name !== undefined) {
+                updates.push("river_name = ?");
+                params.push(stationData.river_name);
+            }
+            if (stationData.state_name !== undefined) {
+                updates.push("state_name = ?");
+                params.push(stationData.state_name);
+            }
+            if (stationData.city_name !== undefined) {
+                updates.push("city_name = ?");
+                params.push(stationData.city_name);
+            }
+            if (stationData.responsible_sigla !== undefined) {
+                updates.push("responsible_sigla = ?");
+                params.push(stationData.responsible_sigla);
+            }
+            if (stationData.operator_sigla !== undefined) {
+                updates.push("operator_sigla = ?");
+                params.push(stationData.operator_sigla);
+            }
+            if (stationData.drainage_area !== undefined) {
+                updates.push("drainage_area = ?");
+                params.push(stationData.drainage_area);
+            }
+            if (stationData.latitude !== undefined) {
+                updates.push("latitude = ?");
+                params.push(stationData.latitude);
+            }
+            if (stationData.longitude !== undefined) {
+                updates.push("longitude = ?");
+                params.push(stationData.longitude);
+            }
+            if (stationData.altitude !== undefined) {
+                updates.push("altitude = ?");
+                params.push(stationData.altitude);
+            }
+
+            if (updates.length === 0) {
+                return {
+                    success: true,
+                    data: { updated: false },
+                };
+            }
+
+            params.push(stationData.id);
+            const query = `UPDATE stations SET ${updates.join(", ")} WHERE id = ?`;
+
+            this.db.prepare(query).run(...params);
+
+            return {
+                success: true,
+                data: { updated: true },
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : "Failed to update station",
+            };
+        }
+    }
+
     searchStations(filters: {
         name?: string;
         basin_code?: string;

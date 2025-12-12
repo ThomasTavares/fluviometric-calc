@@ -22,10 +22,10 @@ function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-    const renderScreen = ():JSX.Element => {
+    const renderScreen = (): JSX.Element => {
         switch (currentScreen) {
             case 'pre-processing':
-                return <PreProcessingScreen />;;
+                return <PreProcessingScreen />;
             case 'streamflow':
                 return <StreamflowScreen />;
             case 'flow-duration-curve':

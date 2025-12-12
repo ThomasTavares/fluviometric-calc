@@ -19,6 +19,23 @@ export interface BackendAPI {
     stations: {
         getAll: () => Promise<any>;
         getById: (id: string) => Promise<any>;
+        update: (stationData: {
+            id: string;
+            name?: string;
+            type?: string;
+            additional_code?: string;
+            basin_code?: string;
+            sub_basin_code?: string;
+            river_name?: string;
+            state_name?: string;
+            city_name?: string;
+            responsible_sigla?: string;
+            operator_sigla?: string;
+            drainage_area?: number;
+            latitude?: number;
+            longitude?: number;
+            altitude?: number;
+        }) => Promise<any>;
         search: (filters: {
             name?: string;
             basin_code?: string;
@@ -28,13 +45,20 @@ export interface BackendAPI {
             city_name?: string;
         }) => Promise<any>;
         count: () => Promise<any>;
-        import: () => Promise<any>;
     };
 
     streamflow: {
-        getForExport: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<DailyFlowsRow[]>>;
+        getForExport: (
+            stationId: string,
+            startDate?: string,
+            endDate?: string
+        ) => Promise<ServiceResponse<DailyFlowsRow[]>>;
         analyzeNullFlows: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<any>>;
-        getNullFlowsSummary: (stationId: string, startDate?: string, endDate?: string) => Promise<ServiceResponse<NullFlowsSummary>>;
+        getNullFlowsSummary: (
+            stationId: string,
+            startDate?: string,
+            endDate?: string
+        ) => Promise<ServiceResponse<NullFlowsSummary>>;
         getAvailableDateRange: (stationId: string) => Promise<ServiceResponse<DateRangeInfo>>;
     };
 
@@ -46,8 +70,32 @@ export interface BackendAPI {
         //calculateAllPercentiles: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
         //calculateCustomPercentiles: (stationId: string, percentiles: number[], dateRange?: { startDate: string; endDate: string }) => Promise<any>;
         //calculateCustomPercentilesWithMethod: (stationId: string, percentiles: number[], method: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
-        calculateFlowDurationCurve: (stationId: string, dateRange?: { startDate: string; endDate: string }, numberOfPoints?: number) => Promise<ServiceResponse<FlowDurationCurveData>>;
+        calculateFlowDurationCurve: (
+            stationId: string,
+            dateRange?: { startDate: string; endDate: string },
+            numberOfPoints?: number
+        ) => Promise<ServiceResponse<FlowDurationCurveData>>;
         calculateQ710: (stationId: string, dateRange?: { startDate: string; endDate: string }) => Promise<any>;
+    };
+    sync: {
+        execute: (params: {
+            cpf: string;
+            password: string;
+            stationCode: string;
+            startDate: string;
+            endDate: string;
+        }) => Promise<any>;
+        cancel: () => Promise<{ success: boolean; error?: string }>;
+        onProgress: (
+            callback: (progress: {
+                windowsCompleted: number;
+                totalWindows: number;
+                currentWindow: string;
+                recordsInserted: number;
+                recordsUpdated: number;
+            }) => void
+        ) => void;
+        removeProgressListener: () => void;
     };
 }
 
