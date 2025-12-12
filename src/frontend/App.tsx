@@ -1,5 +1,6 @@
 import { JSX, useState } from 'react';
 import StartScreen from './components/basic-screens/StartScreen';
+import SyncScreen from './components/basic-screens/SyncScreen';
 import MainScreen from './components/basic-screens/MainScreen';
 import { Station } from '../backend/db';
 
@@ -17,49 +18,54 @@ function App(): JSX.Element {
         setCurrentBasicScreen('main');
     };
 
-    const handleSyncMode = () => {
-        sessionStorage.clear();
-        const tempStation: Station = {
-            id: 'temp',
-            name: 'Modo Sincronização',
-            type: 'Fluviométrica',
-            additional_code: null,
-            basin_code: '',
-            sub_basin_code: '',
-            river_name: '',
-            state_name: '',
-            city_name: '',
-            responsible_sigla: '',
-            operator_sigla: '',
-            drainage_area: null,
-            latitude: null,
-            longitude: null,
-            altitude: null,
-            created_at: new Date()
-        };
+    const handleSyncInit = () => {
+        const stationId = sessionStorage.getItem('stationId');
 
-        setStationData(tempStation);
-        setCurrentBasicScreen('sync-mode');
+        if (stationId) {
+            const placeholderInfo: Station = {
+                id: stationId,
+                name: '',
+                type: 'Fluviométrica',
+                additional_code: null,
+                basin_code: '',
+                sub_basin_code: '',
+                river_name: '',
+                state_name: '',
+                city_name: '',
+                responsible_sigla: '',
+                operator_sigla: '',
+                drainage_area: null,
+                latitude: null,
+                longitude: null,
+                altitude: null,
+                created_at: new Date()
+            };
+            
+            setStationData(placeholderInfo);
+            setCurrentBasicScreen('main');
+        }
     };
 
     const renderBasicScreen = (): JSX.Element => {
-        if (currentBasicScreen === 'main' && stationData) {
+        if (currentBasicScreen === 'main' && (stationData)) {
             return (
                 <MainScreen
                     stationData={stationData}
                     onBack={() => setCurrentBasicScreen('start')}
                 />
             );
-        } else if (currentBasicScreen === 'sync-mode' && stationData) {
+        } else if (currentBasicScreen === 'sync-mode') {
             return (
-                <MainScreen
-                    stationData={stationData}
+                <SyncScreen
+                    onInit={handleSyncInit}
                     onBack={() => setCurrentBasicScreen('start')}
-                    initialScreen='sync'
                 />
             );
         } else {
-            return <StartScreen onInit={handleInit} onSyncMode={handleSyncMode} />;
+            return <StartScreen
+                onInit={handleInit}
+                onSync={() => setCurrentBasicScreen('sync-mode')}
+            />;
         }
     };
 

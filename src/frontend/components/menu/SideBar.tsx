@@ -18,7 +18,7 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
-import SyncIcon from '@mui/icons-material/Sync';
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import { ScreenType } from '../../interfaces/main.interface';
@@ -26,7 +26,6 @@ import SideBarProps from '../../interfaces/sidebar.interface';
 
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
-    { label: 'Sincronizar Dados', key: 'sync' },
     { label: 'Pré-Processamento', key: 'pre-processing' },
     { label: 'Dados Fluviométricos', key: 'streamflow' },
     { label: 'Curva de Permanência', key: 'flow-duration-curve' },
@@ -78,7 +77,7 @@ function SideBar(props: SideBarProps): JSX.Element {
             case 'home':
                 return <InfoOutlineRoundedIcon />;
             case 'sync':
-                return <SyncIcon />;
+                return <SyncRoundedIcon />;
             case 'pre-processing':
                 return <TuneRoundedIcon />;
             case 'streamflow':

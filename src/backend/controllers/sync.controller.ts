@@ -15,12 +15,12 @@ export class SyncController {
 
     async handleSyncStation(
         cpf: string,
-        senha: string,
+        password: string,
         stationCode: string,
         startDate: string,
         endDate: string
     ) {
-        if (!cpf || !senha || !stationCode || !startDate || !endDate) {
+        if (!cpf || !password || !stationCode || !startDate || !endDate) {
             return {
                 success: false,
                 error: "Todos os campos são obrigatórios",
@@ -30,7 +30,7 @@ export class SyncController {
         try {
             const result = await this.syncService.syncStation(
                 cpf,
-                senha,
+                password,
                 stationCode,
                 startDate,
                 endDate,

@@ -80,7 +80,7 @@ export interface BackendAPI {
     sync: {
         execute: (params: {
             cpf: string;
-            senha: string;
+            password: string;
             stationCode: string;
             startDate: string;
             endDate: string;

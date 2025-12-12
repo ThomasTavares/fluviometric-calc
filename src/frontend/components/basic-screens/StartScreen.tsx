@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
-import SyncIcon from '@mui/icons-material/Sync';
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
 
 import { StartScreenProps } from '../../interfaces/start.interface';
 import { validateStationCode } from '../../services/station.api';
@@ -63,11 +63,11 @@ function StartScreen(props: StartScreenProps): JSX.Element {
         });
     };
 
-    const handleSyncMode = () => {
+    /* const handleSyncMode = () => {
         if (props.onSyncMode) {
             props.onSyncMode();
         }
-    };
+    }; */
 
     return (
         <Box sx={{ 
@@ -138,16 +138,17 @@ function StartScreen(props: StartScreenProps): JSX.Element {
                     <Button
                         variant='outlined'
                         size='large'
-                        onClick={handleSyncMode}
-                        startIcon={<SyncIcon />}
+                        onClick={props.onSync}
+                        startIcon={<SyncRoundedIcon />}
                         disabled={isValidating}
                     >
-                        Sincronizar Nova Estação
+                        Sincronizar Estação
                     </Button>
 
                     <Alert severity='info' sx={{ mt: 2 }}>
                         <Typography variant='caption'>
-                            Use "Sincronizar Nova Estação" para adicionar dados de uma estação que ainda não está no sistema
+                            Use "Sincronizar Estação" para adicionar dados de uma estação que ainda não está no sistema,
+                            ou atualizar os dados de uma estação cadastrada.
                         </Typography>
                     </Alert>
                 </Stack>

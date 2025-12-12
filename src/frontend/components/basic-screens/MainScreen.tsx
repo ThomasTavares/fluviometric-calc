@@ -15,18 +15,15 @@ import HomeScreen from '../screens/HomeScreen';
 import StreamflowScreen from '../screens/StreamflowScreen';
 import PreProcessingScreen from '../screens/PreProcessingScreen';
 import FlowDurationScreen from '../screens/FlowDurationScreen';
-import SyncDataScreen from '../screens/SyncDataScreen';
 
 import Q710Analysis from '../../../frontend.old/components/ui/pages/q710Analysis';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
-    const [currentScreen, setCurrentScreen] = useState<ScreenType>(props.initialScreen || 'home');
+    const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
     const renderScreen = (): JSX.Element => {
         switch (currentScreen) {
-            case 'sync':
-                return <SyncDataScreen />;
             case 'pre-processing':
                 return <PreProcessingScreen />;
             case 'streamflow':

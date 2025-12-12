@@ -6,5 +6,4 @@ export interface MainScreenProps {
     stationData?: Station;
     onBack?: () => void;
     onSelectScreen?: (screen: ScreenType) => void;
-    initialScreen?: ScreenType;
 }

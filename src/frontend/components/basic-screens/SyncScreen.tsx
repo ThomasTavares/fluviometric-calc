@@ -12,35 +12,16 @@ import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import ClearIcon from '@mui/icons-material/Clear';
+// import IconButton from '@mui/material/IconButton';
+// import Tooltip from '@mui/material/Tooltip';
+// import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 
 import StationInfoDialog from '../dialogs/StationInfoDialog';
+import { SyncProgress, SyncResult, SyncScreenProps } from '../../interfaces/sync.interface';
 
-interface SyncProgress {
-    windowsCompleted: number;
-    totalWindows: number;
-    currentWindow: string;
-    recordsInserted: number;
-    recordsUpdated: number;
-}
-
-interface SyncResult {
-    success: boolean;
-    cancelled: boolean;
-    stationId: string;
-    stationCreated: boolean;
-    period: { start: string; end: string };
-    windows: { total: number; completed: number; failed: number };
-    records: { inserted: number; updated: number };
-    duration: number;
-    errors: Array<{ window: string; message: string }>;
-}
-
-function SyncDataScreen(): JSX.Element {
+function SyncScreen(props:  SyncScreenProps): JSX.Element {
     const [cpf, setCpf] = useState<string>('');
-    const [senha, setSenha] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [stationCode, setStationCode] = useState<string>('');
     const [startDate, setStartDate] = useState<string>('1900-01-01');
     const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -52,7 +33,7 @@ function SyncDataScreen(): JSX.Element {
     const [result, setResult] = useState<SyncResult | null>(null);
 
     const [showStationDialog, setShowStationDialog] = useState<boolean>(false);
-    const [hasStoredCredentials, setHasStoredCredentials] = useState<boolean>(false);
+    //const [hasStoredCredentials, setHasStoredCredentials] = useState<boolean>(false);
 
     useEffect(() => {
         loadStoredCredentials();
@@ -73,31 +54,31 @@ function SyncDataScreen(): JSX.Element {
 
     const loadStoredCredentials = () => {
         const storedCpf = sessionStorage.getItem('anaCpf');
-        const storedSenha = sessionStorage.getItem('anaSenha');
+        const storePassword = sessionStorage.getItem('anaPassword');
 
-        if (storedCpf && storedSenha) {
+        if (storedCpf && storePassword) {
             setCpf(storedCpf);
-            setSenha(storedSenha);
-            setHasStoredCredentials(true);
+            setPassword(storePassword);
+            //setHasStoredCredentials(true);
         }
     };
 
     const saveCredentials = () => {
         sessionStorage.setItem('anaCpf', cpf);
-        sessionStorage.setItem('anaSenha', senha);
-        setHasStoredCredentials(true);
+        sessionStorage.setItem('anaPassword', password);
+        //setHasStoredCredentials(true);
     };
 
-    const clearCredentials = () => {
+    /* const clearCredentials = () => {
         sessionStorage.removeItem('anaCpf');
-        sessionStorage.removeItem('anaSenha');
+        sessionStorage.removeItem('anaPassword');
         setCpf('');
-        setSenha('');
+        setPassword('');
         setHasStoredCredentials(false);
-    };
+    }; */
 
     const handleSync = async () => {
-        if (!cpf || !senha || !stationCode || !startDate || !endDate) {
+        if (!cpf || !password || !stationCode || !startDate || !endDate) {
             setError('Todos os campos são obrigatórios');
             return;
         }
@@ -118,7 +99,7 @@ function SyncDataScreen(): JSX.Element {
         try {
             const syncResult = await window.backendApi.sync.execute({
                 cpf,
-                senha,
+                password,
                 stationCode,
                 startDate,
                 endDate,
@@ -145,43 +126,49 @@ function SyncDataScreen(): JSX.Element {
 
     const handleCancel = async () => {
         await window.backendApi.sync.cancel();
-        setIsSyncing(false);
     };
 
-    const handleReset = () => {
+    /* const handleReset = () => {
         setProgress(null);
         setLogs([]);
         setResult(null);
         setError('');
-    };
+    }; */
 
     const progressPercent = progress ? (progress.windowsCompleted / progress.totalWindows) * 100 : 0;
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Stack spacing={3}>
-                <Paper elevation={3} sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant='h5'>
-                            Sincronizar Dados da ANA
-                        </Typography>
-                        {hasStoredCredentials && (
-                            <Tooltip title='Limpar credenciais salvas'>
-                                <IconButton onClick={clearCredentials} size='small' color='error'>
-                                    <ClearIcon />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                    </Box>
+        <Box sx={{ 
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}>
+            <Stack spacing={3} direction="row">
+                <Paper
+                    elevation={3}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 3,
+                        maxWidth: 600,
+                    }}
+                >
+                    <Typography variant='h5' gutterBottom>
+                        Sincronizar Dados da ANA
+                    </Typography>
+
                     <Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
                         Sincronize dados fluviométricos diretamente da API da ANA
                     </Typography>
 
-                    {hasStoredCredentials && (
+                    {/* {hasStoredCredentials && (
                         <Alert severity='info' sx={{ mb: 2 }}>
                             Credenciais da ANA carregadas automaticamente
                         </Alert>
-                    )}
+                    )} */}
 
                     {error && <Alert severity='error' sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -202,8 +189,8 @@ function SyncDataScreen(): JSX.Element {
                                     label='Senha'
                                     type='password'
                                     fullWidth
-                                    value={senha}
-                                    onChange={(e) => setSenha(e.target.value)}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     disabled={isSyncing}
                                 />
                             </Box>
@@ -227,7 +214,6 @@ function SyncDataScreen(): JSX.Element {
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     disabled={isSyncing}
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Box>
                             <Box sx={{ flex: 1, minWidth: 250 }}>
@@ -238,109 +224,127 @@ function SyncDataScreen(): JSX.Element {
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
                                     disabled={isSyncing}
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Box>
                         </Box>
 
-                        {!isSyncing && !result && (
-                            <Button
-                                variant='contained'
-                                size='large'
-                                onClick={handleSync}
-                                disabled={!cpf || !senha || !stationCode}
-                            >
-                                Iniciar Sincronização
-                            </Button>
-                        )}
+                        <Stack sx={{ gap: 2}}>
+                            {result && !isSyncing && (
+                                <Button
+                                    variant='contained'
+                                    size='large'
+                                    onClick={props.onInit}
+                                >
+                                    Acessar Sistema
+                                </Button>
+                            )}
 
-                        {isSyncing && (
-                            <Button
-                                variant='outlined'
-                                color='error'
-                                onClick={handleCancel}
-                            >
-                                Cancelar Sincronização
-                            </Button>
-                        )}
+                            {!isSyncing && (
+                                <Button
+                                    variant='contained'
+                                    size='large'
+                                    onClick={handleSync}
+                                    disabled={!cpf || !password || !stationCode}
+                                >
+                                    Iniciar Sincronização
+                                </Button>
+                            )}
 
-                        {result && !isSyncing && (
-                            <Button
-                                variant='outlined'
-                                onClick={handleReset}
-                            >
-                                Nova Sincronização
-                            </Button>
-                        )}
+                            {isSyncing && (
+                                <Button
+                                    variant='outlined'
+                                    color='error'
+                                    onClick={handleCancel}
+                                >
+                                    Cancelar Sincronização
+                                </Button>
+                            )}
+
+                            {!isSyncing && (
+                                <Button
+                                    variant='outlined'
+                                    onClick={props.onBack}
+                                >
+                                    Voltar
+                                </Button>
+                            )}
+                        </Stack>
                     </Stack>
                 </Paper>
-
-                {isSyncing && progress && (
-                    <Paper elevation={3} sx={{ p: 3 }}>
-                        <Typography variant='h6' gutterBottom>
+                            
+                {!result && (
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            padding: 3,
+                            maxWidth: 600,
+                        }}
+                    >
+                        <Typography variant='h5' gutterBottom sx={{alignSelf: 'center'}}>
                             Progresso da Sincronização
                         </Typography>
 
-                        <Box sx={{ mb: 2 }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                <Typography variant='body2' color='text.secondary'>
-                                    {progress.windowsCompleted} de {progress.totalWindows} janelas processadas
-                                </Typography>
-                                <Typography variant='body2' color='text.secondary'>
-                                    {progressPercent.toFixed(0)}%
-                                </Typography>
+                        {progress && (
+                            <>
+                            <Box sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        {progress.windowsCompleted} de {progress.totalWindows} janelas processadas
+                                    </Typography>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        {progressPercent.toFixed(0)}%
+                                    </Typography>
+                                </Box>
+                                <LinearProgress variant='determinate' value={progressPercent} />
                             </Box>
-                            <LinearProgress variant='determinate' value={progressPercent} />
-                        </Box>
 
-                        <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 2 }}>
-                            <Box>
-                                <Typography variant='body2' color='text.secondary'>
-                                    Janela Atual
-                                </Typography>
-                                <Typography variant='body1'>
-                                    {progress.currentWindow}
-                                </Typography>
+                            <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 2 }}>
+                                <Box>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        Janela Atual
+                                    </Typography>
+                                    <Typography variant='body1'>
+                                        {progress.currentWindow}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        Registros Inseridos
+                                    </Typography>
+                                    <Typography variant='body1' color='primary.main'>
+                                        {progress.recordsInserted.toLocaleString('pt-BR')}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        Registros Atualizados
+                                    </Typography>
+                                    <Typography variant='body1' color='secondary.main'>
+                                        {progress.recordsUpdated.toLocaleString('pt-BR')}
+                                    </Typography>
+                                </Box>
                             </Box>
-                            <Box>
-                                <Typography variant='body2' color='text.secondary'>
-                                    Registros Inseridos
-                                </Typography>
-                                <Typography variant='body1' color='primary.main'>
-                                    {progress.recordsInserted.toLocaleString('pt-BR')}
-                                </Typography>
-                            </Box>
-                            <Box>
-                                <Typography variant='body2' color='text.secondary'>
-                                    Registros Atualizados
-                                </Typography>
-                                <Typography variant='body1' color='secondary.main'>
-                                    {progress.recordsUpdated.toLocaleString('pt-BR')}
-                                </Typography>
-                            </Box>
-                        </Box>
 
-                        <Divider sx={{ my: 2 }} />
+                            <Divider sx={{ my: 2 }} />
 
-                        <Typography variant='subtitle2' gutterBottom>
-                            Log de Progresso
-                        </Typography>
-                        <Paper variant='outlined' sx={{ maxHeight: 200, overflow: 'auto', p: 1 }}>
-                            <List dense disablePadding>
-                                {logs.map((log, index) => (
-                                    <ListItem key={index} disablePadding>
-                                        <ListItemText
-                                            primary={log}
-                                            primaryTypographyProps={{
-                                                variant: 'body2',
-                                                fontFamily: 'monospace',
-                                                fontSize: '0.85rem'
-                                            }}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Paper>
+                            <Typography variant='subtitle2' gutterBottom>
+                                Log de Progresso
+                            </Typography>
+                            <Paper variant='outlined' sx={{ maxHeight: 200, overflow: 'auto', p: 1 }}>
+                                <List dense disablePadding>
+                                    {logs.map((log, index) => (
+                                        <ListItem key={index} disablePadding>
+                                            <ListItemText
+                                                primary={log}
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </Paper>
+                            </>
+                        )}
 
                         <Typography variant='caption' color='text.secondary' sx={{ mt: 1, display: 'block' }}>
                             Tempo estimado: 1-2 minutos para períodos longos
@@ -349,8 +353,16 @@ function SyncDataScreen(): JSX.Element {
                 )}
 
                 {result && !isSyncing && (
-                    <Paper elevation={3} sx={{ p: 3 }}>
-                        <Typography variant='h6' gutterBottom>
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            padding: 3,
+                            maxWidth: 600,
+                        }}
+                    >
+                        <Typography variant='h5' gutterBottom sx={{alignSelf: 'center'}}>
                             Resultado da Sincronização
                         </Typography>
 
@@ -474,4 +486,4 @@ function SyncDataScreen(): JSX.Element {
     );
 }
 
-export default SyncDataScreen;
+export default SyncScreen;

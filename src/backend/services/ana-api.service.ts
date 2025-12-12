@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 
 export interface AuthCredentials {
     cpf: string;
-    senha: string;
+    password: string;
 }
 
 export interface AuthResult {
@@ -50,12 +50,12 @@ export class ANAApiService {
         });
     }
 
-    async authenticate(cpf: string, senha: string): Promise<AuthResult> {
+    async authenticate(cpf: string, password: string): Promise<AuthResult> {
         try {
             const response = await this.axiosInstance.get(AUTH_ENDPOINT, {
                 headers: {
                     'Identificador': cpf,
-                    'Senha': senha,
+                    'Senha': password,
                 },
             });
 

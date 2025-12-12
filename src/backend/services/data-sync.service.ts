@@ -58,7 +58,7 @@ export class DataSyncService {
 
     async syncStation(
         cpf: string,
-        senha: string,
+        password: string,
         stationCode: string,
         startDate: string,
         endDate: string,
@@ -67,7 +67,7 @@ export class DataSyncService {
         const startTime = Date.now();
         this.cancelled = false;
 
-        const authResult = await this.anaApiService.authenticate(cpf, senha);
+        const authResult = await this.anaApiService.authenticate(cpf, password);
         if (!authResult.success || !authResult.token) {
             return this.buildErrorResult(stationCode, startDate, endDate, authResult.error || 'Falha na autenticação');
         }

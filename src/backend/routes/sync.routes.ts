@@ -10,7 +10,7 @@ export function registerSyncRoutes(controller: SyncController, mainWindow: Brows
             _event,
             params: {
                 cpf: string;
-                senha: string;
+                password: string;
                 stationCode: string;
                 startDate: string;
                 endDate: string;
@@ -18,7 +18,7 @@ export function registerSyncRoutes(controller: SyncController, mainWindow: Brows
         ) => {
             return await controller.handleSyncStation(
                 params.cpf,
-                params.senha,
+                params.password,
                 params.stationCode,
                 params.startDate,
                 params.endDate
