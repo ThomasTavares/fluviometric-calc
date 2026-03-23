@@ -1,53 +1,26 @@
 import { ipcMain } from "electron";
 import { StationController } from "../controllers/station.controller";
+import Database from "better-sqlite3";
+import { StationService } from "../services/station.service";
+
+export const StationChannels = {
+    getAll:  "stations:getAll",
+    getById: "stations:getById",
+    update:  "stations:update",
+    search:  "stations:search",
+    count:   "stations:count",
+} as const;
+
+export function register(db: Database.Database): void {
+    const service    = new StationService(db);
+    const controller = new StationController(service);
+    registerStationRoutes(controller);
+}
 
 export function registerStationRoutes(controller: StationController): void {
-    ipcMain.handle("stations:getAll", async () => {
-        return await controller.handleGetAllStations();
-    });
-
-    ipcMain.handle("stations:getById", async (event, id: string) => {
-        return await controller.handleGetStationById(id);
-    });
-
-    ipcMain.handle("stations:update", async (event, stationData: {
-        id: string;
-        name?: string;
-        type?: string;
-        additional_code?: string;
-        basin_code?: string;
-        sub_basin_code?: string;
-        river_name?: string;
-        state_name?: string;
-        city_name?: string;
-        responsible_sigla?: string;
-        operator_sigla?: string;
-        drainage_area?: number;
-        latitude?: number;
-        longitude?: number;
-        altitude?: number;
-    }) => {
-        return await controller.handleUpdateStation(stationData);
-    });
-
-    ipcMain.handle(
-        "stations:search",
-        async (
-            event,
-            filters: {
-                name?: string;
-                basin_code?: string;
-                sub_basin_code?: string;
-                river_name?: string;
-                state_name?: string;
-                city_name?: string;
-            }
-        ) => {
-            return await controller.handleSearchStations(filters);
-        }
-    );
-
-    ipcMain.handle("stations:count", async () => {
-        return await controller.handleGetStationCount();
-    });
+    ipcMain.handle(StationChannels.getAll,  async ()              => controller.handleGetAllStations());
+    ipcMain.handle(StationChannels.getById, async (_e, id)        => controller.handleGetStationById(id));
+    ipcMain.handle(StationChannels.update,  async (_e, stationData) => controller.handleUpdateStation(stationData));
+    ipcMain.handle(StationChannels.search,  async (_e, filters)   => controller.handleSearchStations(filters));
+    ipcMain.handle(StationChannels.count,   async ()              => controller.handleGetStationCount());
 }

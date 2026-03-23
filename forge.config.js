@@ -4,6 +4,7 @@ const { AutoUnpackNativesPlugin } = require('@electron-forge/plugin-auto-unpack-
 
 module.exports = {
   packagerConfig: {
+    executableName: 'fluviometric-calc',
     asar: {
       unpack: "*.{node,dll}",
     },
@@ -24,17 +25,17 @@ module.exports = {
         setupIcon: './src/assets/icon.ico',
       },
     },
+    /* Isso daqui é pra build no MacOS
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
+    */
     {
       name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        setupIcon: './src/assets/icon.ico',
+      },
     },
   ],
   plugins: [

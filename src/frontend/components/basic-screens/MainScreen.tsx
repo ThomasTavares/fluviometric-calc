@@ -16,6 +16,7 @@ import StreamflowScreen from '../screens/StreamflowScreen';
 import PreProcessingScreen from '../screens/PreProcessingScreen';
 import FlowDurationScreen from '../screens/FlowDurationScreen';
 import SyncDataScreen from '../screens/SyncDataScreen';
+import ExportTestScreen from '../screens/ExportTestScreen';
 
 import Q710Analysis from '../../../frontend.old/components/ui/pages/q710Analysis';
 
@@ -33,6 +34,8 @@ function MainScreen(props: MainScreenProps): JSX.Element {
                 return <StreamflowScreen />;
             case 'flow-duration-curve':
                 return <FlowDurationScreen />;
+            case 'export-test-screen':
+                return <ExportTestScreen />;
             case 'q710':
                 return <Q710Analysis onBack={null}/>;
             default:

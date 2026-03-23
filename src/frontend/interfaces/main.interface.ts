@@ -1,6 +1,6 @@
 import { Station } from '../../backend/db';
 
-export type ScreenType = 'home' | 'sync' | 'pre-processing' | 'streamflow' | 'flow-duration-curve' | 'q710';
+export type ScreenType = 'home' | 'sync' | 'pre-processing' | 'streamflow' | 'flow-duration-curve' | 'q710' | 'export-test-screen';
 
 export interface MainScreenProps {
     stationData?: Station;

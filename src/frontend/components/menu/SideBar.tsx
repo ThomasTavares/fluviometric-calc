@@ -30,6 +30,7 @@ const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Pré-Processamento', key: 'pre-processing' },
     { label: 'Dados Fluviométricos', key: 'streamflow' },
     { label: 'Curva de Permanência', key: 'flow-duration-curve' },
+    { label: 'Teste Export',         key: 'export-test-screen' },
     { label: 'Vazão Q7,10', key: 'q710' }
 ];
 
@@ -85,6 +86,8 @@ function SideBar(props: SideBarProps): JSX.Element {
                 return <TableChartOutlinedIcon />;
             case 'flow-duration-curve':
                 return <TimelineIcon />;
+            case 'export-test-screen':
+                return <TimelineIcon />
             case 'q710':
                 return <BarChartRoundedIcon />;
         }

@@ -1,6 +1,23 @@
 {
     "content": [
         {
+            "id": "123",
+            "nome": "ESTACAO TESTE",
+            "tipoEstacao": "Fluviométrica",
+            "codigoAdicional": null,
+            "codigoNomeBacia": "0 - TESTE",
+            "codigoNomeSubBacia": "00 - TESTE",
+            "nomeRio": "RIO TESTE",
+            "nomeEstado": "SANTA CATARINA",
+            "nomeMunicipio": "MUNICIPIO TESTE",
+            "responsavelSigla": "ANA",
+            "operadoraSigla": "ANA",
+            "areaDrenagem": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "altitude": 0.0
+        },
+        {
             "id": "65085000",
             "nome": "BATEIAS DE BAIXO",
             "tipoEstacao": "Fluviométrica",

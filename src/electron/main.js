@@ -6,25 +6,11 @@ import { DatabaseManager } from "../backend/db";
 import { importAllStations } from "../backend/scripts/station.script";
 import { importAllStreamflow } from "../backend/scripts/streamflow.script";
 
-import { StationService } from "../backend/services/station.service";
-import { StationController } from "../backend/controllers/station.controller";
-import { registerStationRoutes } from "../backend/routes/station.routes";
-
-import { StreamflowService } from "../backend/services/streamflow.service";
-import { StreamflowController } from "../backend/controllers/streamflow.controller";
-import { registerStreamflowRoutes } from "../backend/routes/streamflow.routes";
-
-import { PercentileService } from "../backend/services/calculations/percentile.service";
-import { PercentileController } from "../backend/controllers/percentile.controller";
-import { registerPercentileRoutes } from "../backend/routes/percentile.routes";
-
 import { Q710Service } from "../backend/services/calculations/q710.service";
 import { Q710Controller } from "../backend/controllers/q710.controller";
 import { registerQ710Routes } from "../backend/routes/q710.routes";
 
-import { DataSyncService } from "../backend/services/data-sync.service";
-import { SyncController } from "../backend/controllers/sync.controller";
-import { registerSyncRoutes } from "../backend/routes/sync.routes";
+import { registerAll } from "../backend/routes/index";
 
 if (started) {
     app.quit();
@@ -133,26 +119,6 @@ const importStreamflowsIfNeeded = async (db, hasStations, hasStreamflows) => {
     }
 };
 
-const setupStationModule = (db) => {
-    const stationService = new StationService(db);
-    const stationController = new StationController(stationService);
-    registerStationRoutes(stationController);
-    console.log("Station routes registered successfully");
-};
-
-const setupStreamflowModule = (db) => {
-    const streamflowService = new StreamflowService(db);
-    const streamflowController = new StreamflowController(streamflowService);
-    registerStreamflowRoutes(streamflowController);
-    console.log("Streamflow routes registered successfully");
-};
-
-const setupPercentileModule = (db) => {
-    const percentileService = new PercentileService(db);
-    const percentileController = new PercentileController(percentileService);
-    registerPercentileRoutes(percentileController);
-    console.log("Percentile routes registered successfully");
-};
 
 const setupQ710Module = (db) => {
     const q710Service = new Q710Service(db);
@@ -161,20 +127,9 @@ const setupQ710Module = (db) => {
     console.log("Q710 routes registered successfully");
 };
 
-const setupSyncModule = (db, mainWindow) => {
-    const syncService = new DataSyncService(db);
-    const syncController = new SyncController(syncService);
-    registerSyncRoutes(syncController, mainWindow);
-    console.log("Sync routes registered successfully");
-};
-
 const initializeModules = (db, mainWindow) => {
-    setupStationModule(db);
-    setupStreamflowModule(db);
-    setupPercentileModule(db);
-    setupQ710Module(db);
-    setupSyncModule(db, mainWindow);
-    console.log("\nAll modules initialized successfully");
+    registerAll(db, mainWindow);
+    console.log("All modules initialized successfully");
 };
 
 const populateDatabaseIfNeeded = async (db) => {

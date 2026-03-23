@@ -1,157 +1,65 @@
 import { ipcMain } from "electron";
+import Database from "better-sqlite3";
+import { PercentileService, PercentileMethod } from "../services/calculations/percentile.service";
 import { PercentileController } from "../controllers/percentile.controller";
-import { PercentileMethod } from "../services/calculations/percentile.service";
 
 interface DateRange {
     startDate?: string;
     endDate?: string;
 }
 
-export function registerPercentileRoutes(controller: PercentileController): void {
+export const PercentileChannels = {
+    calculatePercentile:                "analysis:calculatePercentile",
+    calculatePercentileWithMethod:      "analysis:calculatePercentileWithMethod",
+    compareAllPercentileMethods:        "analysis:compareAllPercentileMethods",
+    comparePercentileMethods:           "analysis:comparePercentileMethods",
+    calculateAllPercentiles:            "analysis:calculateAllPercentiles",
+    calculateCustomPercentiles:         "analysis:calculateCustomPercentiles",
+    calculateCustomPercentilesWithMethod: "analysis:calculateCustomPercentilesWithMethod",
+    calculateFlowDurationCurve:         "analysis:calculateFlowDurationCurve",
+} as const;
 
-    ipcMain.handle(
-        "analysis:calculatePercentile",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentile: number;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCalculatePercentile(
-                params.stationId,
-                params.percentile,
-                params.dateRange
-            );
-        }
+export function register(db: Database.Database): void {
+    const service    = new PercentileService(db);
+    const controller = new PercentileController(service);
+
+    ipcMain.handle(PercentileChannels.calculatePercentile,
+        async (_e, params: { stationId: string; percentile: number; dateRange?: DateRange }) =>
+            controller.handleCalculatePercentile(params.stationId, params.percentile, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:calculatePercentileWithMethod",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentile: number;
-                method: PercentileMethod;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCalculatePercentileWithMethod(
-                params.stationId,
-                params.percentile,
-                params.method,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.calculatePercentileWithMethod,
+        async (_e, params: { stationId: string; percentile: number; method: PercentileMethod; dateRange?: DateRange }) =>
+            controller.handleCalculatePercentileWithMethod(params.stationId, params.percentile, params.method, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:compareAllPercentileMethods",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentile: number;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCompareAllPercentileMethods(
-                params.stationId,
-                params.percentile,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.compareAllPercentileMethods,
+        async (_e, params: { stationId: string; percentile: number; dateRange?: DateRange }) =>
+            controller.handleCompareAllPercentileMethods(params.stationId, params.percentile, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:comparePercentileMethods",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentile: number;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleComparePercentileMethods(
-                params.stationId,
-                params.percentile,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.comparePercentileMethods,
+        async (_e, params: { stationId: string; percentile: number; dateRange?: DateRange }) =>
+            controller.handleComparePercentileMethods(params.stationId, params.percentile, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:calculateAllPercentiles",
-        async (
-            event, 
-            params: { 
-                stationId: string;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCalculateAllPercentiles(
-                params.stationId,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.calculateAllPercentiles,
+        async (_e, params: { stationId: string; dateRange?: DateRange }) =>
+            controller.handleCalculateAllPercentiles(params.stationId, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:calculateCustomPercentiles",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentiles: number[];
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCalculateCustomPercentiles(
-                params.stationId,
-                params.percentiles,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.calculateCustomPercentiles,
+        async (_e, params: { stationId: string; percentiles: number[]; dateRange?: DateRange }) =>
+            controller.handleCalculateCustomPercentiles(params.stationId, params.percentiles, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:calculateCustomPercentilesWithMethod",
-        async (
-            event,
-            params: { 
-                stationId: string; 
-                percentiles: number[];
-                method: PercentileMethod;
-                dateRange?: DateRange;
-            }
-        ) => {
-            return await controller.handleCalculateCustomPercentilesWithMethod(
-                params.stationId,
-                params.percentiles,
-                params.method,
-                params.dateRange
-            );
-        }
+    ipcMain.handle(PercentileChannels.calculateCustomPercentilesWithMethod,
+        async (_e, params: { stationId: string; percentiles: number[]; method: PercentileMethod; dateRange?: DateRange }) =>
+            controller.handleCalculateCustomPercentilesWithMethod(params.stationId, params.percentiles, params.method, params.dateRange)
     );
 
-    ipcMain.handle(
-        "analysis:calculateFlowDurationCurve",
-        async (
-            event,
-            params: { 
-                stationId: string;
-                dateRange?: DateRange;
-                numberOfPoints?: number;
-            }
-        ) => {
-            return await controller.handleCalculateFlowDurationCurve(
-                params.stationId,
-                params.dateRange,
-                params.numberOfPoints
-            );
-        }
+    ipcMain.handle(PercentileChannels.calculateFlowDurationCurve,
+        async (_e, params: { stationId: string; dateRange?: DateRange; numberOfPoints?: number }) =>
+            controller.handleCalculateFlowDurationCurve(params.stationId, params.dateRange, params.numberOfPoints)
     );
 }
