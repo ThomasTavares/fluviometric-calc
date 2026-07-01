@@ -15,8 +15,7 @@ import HomeScreen from '../screens/HomeScreen';
 import StreamflowScreen from '../screens/StreamflowScreen';
 import PreProcessingScreen from '../screens/PreProcessingScreen';
 import FlowDurationScreen from '../screens/FlowDurationScreen';
-
-import Q710Analysis from '../../../frontend.old/components/ui/pages/q710Analysis';
+import Q710Screen from '../screens/Q710Screen';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -31,7 +30,7 @@ function MainScreen(props: MainScreenProps): JSX.Element {
             case 'flow-duration-curve':
                 return <FlowDurationScreen />;
             case 'q710':
-                return <Q710Analysis onBack={null}/>;
+                return <Q710Screen />;
             default:
                 return <HomeScreen stationData={props.stationData}/>;
         }
