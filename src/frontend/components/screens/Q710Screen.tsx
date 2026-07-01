@@ -147,10 +147,6 @@ function Q710Screen(): JSX.Element {
                 overflow: 'hidden'
             }}
         >
-            <Typography variant="h5" color="primary" gutterBottom fontWeight="bold">
-                Resultado Q7,10 - Estação {q710Data.station_id}
-            </Typography>
-
             {/* Top KPIs (Cards) */}
             <Grid container spacing={2} sx={{ mb: 2, flexShrink: 0 }}>
                 <Grid size={{ xs: 12, sm: 3 }}>

@@ -10,6 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Collapse from '@mui/material/Collapse'; // NOVO IMPORT
 
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import UndoRoundedIcon from '@mui/icons-material/UndoRounded';
@@ -21,21 +22,29 @@ import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
+import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
+import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
+import InsertChartRoundedIcon from '@mui/icons-material/InsertChartRounded';
+import InsertChartOutlinedRoundedIcon from '@mui/icons-material/InsertChartOutlinedRounded';
+
 import { ScreenType } from '../../interfaces/main.interface';
 import SideBarProps from '../../interfaces/sidebar.interface';
 
+// Removemos a 'q710' daqui para tratá-la como submenu manualmente
 const screensInfoMap: { label: string; key: ScreenType }[] = [
     { label: 'Informações Estação', key: 'home' },
     { label: 'Pré-Processamento', key: 'pre-processing' },
     { label: 'Dados Fluviométricos', key: 'streamflow' },
-    { label: 'Curva de Permanência', key: 'flow-duration-curve' },
-    { label: 'Vazão Q7,10', key: 'q710' }
+    { label: 'Curva de Permanência', key: 'flow-duration-curve' }
 ];
 
 function SideBar(props: SideBarProps): JSX.Element {
     const mainScreenProps = props.mainScreenProps;
     const [stationName, setStationName] = useState<string>('');
     const [stationId, setStationId] = useState<string>('');
+    
+    // NOVO ESTADO PARA O SUBMENU
+    const [openQ710, setOpenQ710] = useState<boolean>(false);
 
     useEffect(() => {
         if (props.open) {
@@ -55,6 +64,7 @@ function SideBar(props: SideBarProps): JSX.Element {
         setStationId(id);
 
         try {
+            // @ts-ignore (Caso falte a interface global do backendApi)
             const result = await window.backendApi.stations.getById(id);
             if (result.success && result.data) {
                 setStationName(result.data.name || `Estação ${id}`);
@@ -74,18 +84,12 @@ function SideBar(props: SideBarProps): JSX.Element {
 
     const renderScreenIcon = (screen: ScreenType): JSX.Element => {
         switch (screen) {
-            case 'home':
-                return <InfoOutlineRoundedIcon />;
-            case 'sync':
-                return <SyncRoundedIcon />;
-            case 'pre-processing':
-                return <TuneRoundedIcon />;
-            case 'streamflow':
-                return <TableChartOutlinedIcon />;
-            case 'flow-duration-curve':
-                return <TimelineIcon />;
-            case 'q710':
-                return <BarChartRoundedIcon />;
+            case 'home': return <InfoOutlineRoundedIcon />;
+            case 'sync': return <SyncRoundedIcon />;
+            case 'pre-processing': return <TuneRoundedIcon />;
+            case 'streamflow': return <TableChartOutlinedIcon />;
+            case 'flow-duration-curve': return <TimelineIcon />;
+            default: return <InfoOutlineRoundedIcon />;
         }
     };
 
@@ -115,6 +119,7 @@ function SideBar(props: SideBarProps): JSX.Element {
                             <ListItemText primary={'Alterar Estação'} sx={{ ml: -1.5 }}/>
                         </ListItemButton>
                     </ListItem>
+                                        
                     {screensInfoMap.map((screen) => (
                         <ListItem key={screen.key} disablePadding>
                             <ListItemButton onClick={() => handleSelection(screen.key)}>
@@ -125,6 +130,33 @@ function SideBar(props: SideBarProps): JSX.Element {
                             </ListItemButton>
                         </ListItem>
                     ))}
+
+                    {/* SUBMENU Q7,10 */}
+                    <ListItem disablePadding sx={{ display: 'block' }}>
+                        <ListItemButton onClick={() => setOpenQ710(!openQ710)}>
+                            <ListItemIcon>
+                                <BarChartRoundedIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Vazão Q7,10" sx={{ ml: -1.5 }} />
+                            {openQ710 ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+                        </ListItemButton>
+                    </ListItem>
+                    <Collapse in={openQ710} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }} onClick={() => handleSelection('q710')}>
+                                <ListItemIcon>
+                                    <InsertChartRoundedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Resultados" sx={{ ml: -1.5 }} />
+                            </ListItemButton>
+                            <ListItemButton sx={{ pl: 4 }} onClick={() => handleSelection('q710-chart')}>
+                                <ListItemIcon>
+                                    <InsertChartOutlinedRoundedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Gráfico" sx={{ ml: -1.5 }} />
+                            </ListItemButton>
+                        </List>
+                    </Collapse>
                 </List>
 
                 <Box sx={{ flexGrow: 1 }} />

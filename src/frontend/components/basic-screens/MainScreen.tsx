@@ -16,6 +16,7 @@ import StreamflowScreen from '../screens/StreamflowScreen';
 import PreProcessingScreen from '../screens/PreProcessingScreen';
 import FlowDurationScreen from '../screens/FlowDurationScreen';
 import Q710Screen from '../screens/Q710Screen';
+import Q710ChartScreen from '../screens/Q710ChartScreen';
 
 function MainScreen(props: MainScreenProps): JSX.Element {
     const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -23,16 +24,12 @@ function MainScreen(props: MainScreenProps): JSX.Element {
 
     const renderScreen = (): JSX.Element => {
         switch (currentScreen) {
-            case 'pre-processing':
-                return <PreProcessingScreen />;
-            case 'streamflow':
-                return <StreamflowScreen />;
-            case 'flow-duration-curve':
-                return <FlowDurationScreen />;
-            case 'q710':
-                return <Q710Screen />;
-            default:
-                return <HomeScreen stationData={props.stationData}/>;
+            case 'pre-processing': return <PreProcessingScreen />;
+            case 'streamflow': return <StreamflowScreen />;
+            case 'flow-duration-curve': return <FlowDurationScreen />;
+            case 'q710': return <Q710Screen />;
+            case 'q710-chart': return <Q710ChartScreen />;
+            default: return <HomeScreen stationData={props.stationData}/>;
         }
     };
 
