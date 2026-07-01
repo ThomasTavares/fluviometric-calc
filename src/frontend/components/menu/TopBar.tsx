@@ -22,7 +22,9 @@ function TopBar(props: TopBarProps): JSX.Element {
             case 'flow-duration-curve':
                 return 'Curva de Permanência';
             case 'q710':
-                return 'Vazão Q7,10';
+                return 'Vazão Q7,10 - Resultados';
+            case 'q710-chart':
+                return 'Vazão Q7,10 - Gráfico';
             case 'sync':
                 return 'Sincronização Dados'
             default:
