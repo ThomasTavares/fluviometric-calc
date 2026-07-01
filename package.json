@@ -1,7 +1,7 @@
 {
   "name": "fluviometric-calc",
   "productName": "Sistema de Análise Fluviométrica",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Uma aplicação desktop para análise de dados fluviométricos, incluindo cálculo de curvas de permanência, análise Q7,10 e outras ferramentas hidrológicas.",
   "main": ".vite/build/main.js",
   "scripts": {
